@@ -1,38 +1,46 @@
 package com.eventplanner.dashboard;
 
+import com.eventplanner.dashboard.controller.DashboardController;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-/**
- * Main application class for running Event Planner Dashboard.
- *
- * @author janika
- */
 public class EPDWA extends Application {
 
     public static void main(String[] args) {
-        launch(args);  // Launches the JavaFX application
+        launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Event Planner Dashboard");  // Set the title of the window
+        primaryStage.setTitle("Event Planner Dashboard");
 
-        // Create a simple button
-        Button btn = new Button("Click Me!");
-        btn.setOnAction(event -> System.out.println("Button was clicked!"));
+        // Create the search box for location
+        TextField locationField = new TextField();
+        locationField.setPromptText("Enter location...");
 
-        // Set up the layout
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);  // Add button to the layout
+        // Create the fetch weather button
+        Button fetchWeatherButton = new Button("Fetch Weather");
 
-        // Create a scene and set it in the primary stage
-        Scene scene = new Scene(root, 300, 250);  // Width: 300, Height: 250
+        // Create a label to display the weather data
+        Label weatherLabel = new Label();
+
+        // Create a DashboardController instance
+        DashboardController dashboardController = new DashboardController(
+                weatherLabel);
+
+        // Set up button action
+        fetchWeatherButton.setOnAction(event -> {
+            String location = locationField.getText();
+            dashboardController.fetchWeatherData(location);
+        });
+
+        // Set up the front layout
+        VBox vbox = new VBox(locationField, fetchWeatherButton, weatherLabel);
+        Scene scene = new Scene(vbox, 400, 200);
         primaryStage.setScene(scene);
-
-        primaryStage.show();  // Show the primary stage
+        primaryStage.show();
     }
 }

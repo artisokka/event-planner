@@ -1,34 +1,26 @@
 package com.eventplanner.dashboard.controller;
 
-/**
- *
- * @author afeera
- */
-
 import com.eventplanner.dashboard.model.DataModel;
-import com.eventplanner.dashboard.model.WeatherData;
-
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.List;
+import com.eventplanner.dashboard.service.WeatherApiService;
+import javafx.scene.control.Label;
 
 public class DashboardController {
-    private final DataModel model;
 
-    public DashboardController() {
-        this.model = new DataModel();
+    private final WeatherApiService weatherApiService;
+    private final Label weatherLabel;
+
+    // Constructor takes a Label parameter
+    public DashboardController(Label weatherLabel) {
+        this.weatherLabel = weatherLabel;
+        this.weatherApiService = new WeatherApiService();
     }
 
-    public List<WeatherData> fetchWeatherData(String location, LocalDate startDate, LocalDate endDate) {
-        try {
-            model.fetchWeatherData(location, startDate, endDate);
-            return model.getWeatherDataList();
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            // Handle the error appropriately, maybe set an error state or throw a custom exception
-            return null;
+    public void fetchWeatherData(String cityName) {
+        DataModel dataModel = weatherApiService.fetchWeatherData(cityName);
+        if (dataModel != null) {
+            weatherLabel.setText(dataModel.toString());
+        } else {
+            weatherLabel.setText("No data available.");
         }
     }
-
-    // Add more methods as needed for other functionalities
 }

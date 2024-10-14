@@ -1,28 +1,25 @@
 package com.eventplanner.dashboard.model;
 
-import com.eventplanner.dashboard.service.WeatherApiService;
-/**
- *
- * @author afeera
- */
-
-import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
 
 public class DataModel {
+
     private List<WeatherData> weatherDataList;
-    private final WeatherApiService weatherApiService;
 
-    public DataModel() {
-        this.weatherApiService = new WeatherApiService();
-    }
-
-    public void fetchWeatherData(String location, LocalDate startDate, LocalDate endDate) throws IOException, InterruptedException {
-        weatherDataList = weatherApiService.fetchWeatherData(location, startDate, endDate);
+    public DataModel(List<WeatherData> weatherDataList) {
+        this.weatherDataList = weatherDataList;
     }
 
     public List<WeatherData> getWeatherDataList() {
         return weatherDataList;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (WeatherData data : weatherDataList) {
+            result.append(data.toString()).append("\n");
+        }
+        return result.toString();
     }
 }

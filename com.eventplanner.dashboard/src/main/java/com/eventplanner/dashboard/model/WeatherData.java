@@ -1,30 +1,40 @@
 package com.eventplanner.dashboard.model;
 
-/**
- *
- * @author afeera
- */
-
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class WeatherData {
+
     private LocalDateTime dateTime;
     private double temperature;
     private double humidity;
     private double precipitation;
 
-    public WeatherData(LocalDateTime dateTime, double temperature, double humidity, double precipitation) {
-        this.dateTime = dateTime;
+    public WeatherData(String dateTime, double temperature, double humidity,
+            double precipitation) {
+        this.dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(Long.
+                parseLong(dateTime)), ZoneId.systemDefault());
         this.temperature = temperature;
         this.humidity = humidity;
         this.precipitation = precipitation;
     }
 
-    // Getters
-    public LocalDateTime getDateTime() { return dateTime; }
-    public double getTemperature() { return temperature; }
-    public double getHumidity() { return humidity; }
-    public double getPrecipitation() { return precipitation; }
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public double getTemperature() {
+        return temperature;
+    }
+
+    public double getHumidity() {
+        return humidity;
+    }
+
+    public double getPrecipitation() {
+        return precipitation;
+    }
 
     @Override
     public String toString() {
