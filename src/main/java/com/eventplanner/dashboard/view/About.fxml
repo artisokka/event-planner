@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox prefHeight="42.0" prefWidth="600.0">
+         <children>
+            <Label text="EVENT PLANNER'S DASHBOARD" />
+            <ToolBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="37.0" prefWidth="323.0">
+               <items>
+                  <Button mnemonicParsing="false" text="Home" />
+                  <Button mnemonicParsing="false" text="History" />
+                  <Button mnemonicParsing="false" text="Saved Preferences" />
+                  <Button mnemonicParsing="false" text="About" />
+               </items>
+            </ToolBar>
+         </children>
+      </HBox>
+      <VBox layoutX="98.0" layoutY="66.0" prefHeight="290.0" prefWidth="405.0">
+         <children>
+            <Label text="About" />
+            <TextArea prefHeight="200.0" prefWidth="200.0" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus sit amet interdum nisi, sed accumsan justo. Phasellus pharetra nibh in nisl consectetur, non convallis turpis tincidunt. Donec sed nulla sit amet mauris dignissim elementum vitae vitae risus. Aliquam urna magna, elementum a auctor quis, mollis eu leo. Aenean eu elit fringilla, eleifend nisi at, venenatis nisi. Etiam interdum ex ex. Quisque scelerisque nisi ac quam lacinia ullamcorper. Etiam tincidunt ante eget lectus maximus, eget porta arcu aliquet." />
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
