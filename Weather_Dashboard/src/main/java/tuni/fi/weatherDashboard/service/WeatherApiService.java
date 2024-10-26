@@ -1,58 +1,49 @@
-package com.eventplanner.dashboard.service;
+package tuni.fi.weatherDashboard.service;
 
-import com.eventplanner.dashboard.model.DataModel;
-import com.eventplanner.dashboard.model.WeatherData;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.IOException;
+import tuni.fi.weatherDashboard.model.DataModel;
+import tuni.fi.weatherDashboard.model.WeatherData;
+import org.json.JSONObject;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import org.json.JSONObject;
-import java.util.Properties;
 
 public class WeatherApiService {
-
-    private static final String BASE_URL =
-            "https://api.openweathermap.org/data/2.5/weather";
-    private String API_KEY;
+    private static final String BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
+    private final String API_KEY = "b7342cc2f1ed92e5f2a6e98263b04190";
 
     public WeatherApiService() {
-        loadApiKey();
-    }
-
-    private void loadApiKey() {
-        try (InputStream input = getClass().getClassLoader().
-                getResourceAsStream("config.properties")) {
-            Properties prop = new Properties();
-            if (input == null) {
-                System.out.println("Sorry, unable to find config.properties");
-                return;
-            }
-            prop.load(input);
-            API_KEY = prop.getProperty("api.key");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        // Initialize service
+        System.out.println("Weather API Service initialized");
     }
 
     public DataModel fetchWeatherData(String cityName) {
-        WeatherData weatherData = null;
-
-        try {
-            String apiUrl = String.format("%s?q=%s&units=metric&appid=%s",
-                    BASE_URL, cityName, API_KEY);
-            String jsonResponse = sendGetRequest(apiUrl);
-            weatherData = parseWeatherData(jsonResponse);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (cityName == null || cityName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Please enter a city name");
         }
 
-        // Return a DataModel with the single WeatherData object
-        return new DataModel(weatherData != null ? List.of(weatherData)
-                : new ArrayList<>());
+        WeatherData weatherData = null;
+        try {
+            // Clean and encode the city name
+            String encodedCity = URLEncoder.encode(cityName.trim(), StandardCharsets.UTF_8.toString());
+            String apiUrl = String.format("%s?q=%s&units=metric&appid=%s",
+                    BASE_URL, encodedCity, API_KEY);
+            
+            System.out.println("Fetching weather data for: " + cityName);
+            String jsonResponse = sendGetRequest(apiUrl);
+            
+            weatherData = parseWeatherData(jsonResponse);
+            weatherData.setLocation(cityName);
+            
+            System.out.println("Successfully retrieved weather data for: " + cityName);
+        } catch (Exception e) {
+            System.err.println("Error fetching weather data for " + cityName + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+        return new DataModel(weatherData != null ? List.of(weatherData) : new ArrayList<>());
     }
 
     private String sendGetRequest(String urlString) throws Exception {
@@ -60,37 +51,81 @@ public class WeatherApiService {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Accept", "application/json");
-
+        conn.setConnectTimeout(5000);
+        conn.setReadTimeout(5000);
+        
         int responseCode = conn.getResponseCode();
+        
         if (responseCode != HttpURLConnection.HTTP_OK) {
-            throw new RuntimeException("Failed : HTTP error code : " +
-                    responseCode);
+            try (BufferedReader errorReader = new BufferedReader(
+                    new InputStreamReader(conn.getErrorStream()))) {
+                StringBuilder errorResponse = new StringBuilder();
+                String line;
+                while ((line = errorReader.readLine()) != null) {
+                    errorResponse.append(line);
+                }
+                throw new RuntimeException(switch (responseCode) {
+                    case 401 -> "Invalid API key. Please check your configuration.";
+                    case 404 -> "City not found. Please check the city name.";
+                    case 429 -> "Too many requests. Please try again later.";
+                    default -> "Error: " + errorResponse.toString();
+                });
+            }
         }
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(conn.
-                getInputStream()));
-        StringBuilder response = new StringBuilder();
-        String output;
-        while ((output = br.readLine()) != null) {
-            response.append(output);
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(conn.getInputStream()))) {
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                response.append(line);
+            }
+            return response.toString();
+        } finally {
+            conn.disconnect();
         }
-        conn.disconnect();
-        return response.toString();
     }
 
     public WeatherData parseWeatherData(String jsonResponse) {
-        JSONObject jsonObject = new JSONObject(jsonResponse);
+        try {
+            JSONObject jsonObject = new JSONObject(jsonResponse);
+            
+            // Extract main weather data
+            long dt = jsonObject.getLong("dt");
+            JSONObject main = jsonObject.getJSONObject("main");
+            
+            double temperature = main.getDouble("temp");
+            double humidity = main.getDouble("humidity");
+            
+            // Handle precipitation data
+            double precipitation = 0.0;
+            if (jsonObject.has("rain")) {
+                JSONObject rain = jsonObject.getJSONObject("rain");
+                precipitation = rain.optDouble("1h", 0.0);
+            } else if (jsonObject.has("snow")) {
+                JSONObject snow = jsonObject.getJSONObject("snow");
+                precipitation = snow.optDouble("1h", 0.0);
+            }
 
-        // Extracting data from response
-        long dt = jsonObject.getLong("dt"); // Unix timestamp
-        String dateTime = String.valueOf(dt); // String representation for constructor
+            WeatherData weatherData = new WeatherData(
+                String.valueOf(dt),
+                temperature,
+                humidity,
+                precipitation
+            );
 
-        double temperature = jsonObject.getJSONObject("main").getDouble("temp");
-        double humidity = jsonObject.getJSONObject("main").getDouble("humidity");
-        double precipitation = jsonObject.has("rain") ? jsonObject.
-                getJSONObject("rain").optDouble("1h", 0) : 0; // Default to 0 if no data for now
+            // Add weather description
+            if (jsonObject.has("weather") && jsonObject.getJSONArray("weather").length() > 0) {
+                String description = jsonObject.getJSONArray("weather")
+                    .getJSONObject(0)
+                    .getString("description");
+                weatherData.setDescription(description);
+            }
 
-        // Create and return a WeatherData object
-        return new WeatherData(dateTime, temperature, humidity, precipitation);
+            return weatherData;
+        } catch (Exception e) {
+            System.err.println("Error parsing weather data: " + e.getMessage());
+            throw new RuntimeException("Failed to parse weather data: " + e.getMessage());
+        }
     }
 }

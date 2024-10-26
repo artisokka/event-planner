@@ -1,2 +1,4 @@
 /com.eventplanner.dashboard/target/
 .gitignore
+.DS_Store
+/Weather_Dashboard/target/
