@@ -1,0 +1,14 @@
+9.	Self-Evaluation
+In this section, we evaluate the effectiveness of our initial design and how well it has supported the development process. We follow our initial design plan, assess its potential areas of improvement, and identify any adjustments needed for the implementation. 
+•	Successes: 
+o	Front-End Design: We applied JavaFx for the front-end design, using SceneBuilder to streamline the creation of view components. This tool enables us to visually design the initial interface and generate corresponding FXML files, which effectively affects the development process. As a result, we successfully created four key views:
+	About view: Provides users with an overview of the application’s purpose and features.  
+	Dashboard view: Provides users with the primary interface of the application, displaying real-time weather data, calendar and other relevant information. 
+	History view: Allows users to view the calendar of plan schedules. 
+	SavePreferences view: Enables users to configure their settings. 
+o	IDE choice: We utilized Apache NetBeans to develop and deploy the application. 
+•	Challenges: 
+o	FXML and Controller synchronization: While SceneBuilder simplified Front-End design but is difficult to keep FXML files synchronized with JavaFX controllers. 
+•	Implementation Progress:
+o	The major views (About, Dashboard, History and SavePreferences) have been implemented according to plan, aligning with the initial structure.  
+o	Initial data visualizations are functional, providing essential weather and air quality data, but we still considering further enhancements.  
