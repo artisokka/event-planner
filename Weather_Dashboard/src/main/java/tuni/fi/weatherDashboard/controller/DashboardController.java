@@ -25,6 +25,7 @@ public class DashboardController extends BaseController {
     @FXML private Label temperatureLabel;
     @FXML private Label humidityLabel;
     @FXML private Label descriptionLabel;
+    @FXML private ListView weatherSummaryListView;
 
     private WeatherApiService weatherService;
     private List<String> savedLocations = new ArrayList<>();
@@ -200,6 +201,8 @@ public class DashboardController extends BaseController {
                 if (descriptionLabel != null && currentWeather.getDescription() != null) {
                     descriptionLabel.setText("Conditions: " + currentWeather.getDescription());
                 }
+                // Update weather summary ListView for current weather
+                updateWeatherSummaryListView(currentWeather);
 
                 // Update chart
                 updateChart(dataModel);
@@ -211,6 +214,29 @@ public class DashboardController extends BaseController {
             }
         });
     }
+
+    private void updateWeatherSummaryListView(WeatherData currentWeather) {
+        if (weatherSummaryListView == null) {
+            return;
+        }
+
+        // Clear previous data in the list view
+        weatherSummaryListView.getItems().clear();
+
+        // Add current weather summary to the list view
+        weatherSummaryListView.getItems().add(String.format(
+                "Temperature: %.1f°C",
+                currentWeather.
+                        getTemperature()));
+        weatherSummaryListView.getItems().add(String.format("Humidity: %.1f%%",
+                currentWeather.
+                        getHumidity()));
+        if (currentWeather.getDescription() != null) {
+            weatherSummaryListView.getItems().add("Conditions: " +
+                    currentWeather.getDescription());
+        }
+    }
+
 
     private void updateChart(DataModel dataModel) {
         if (weatherChart == null) {
@@ -224,22 +250,23 @@ public class DashboardController extends BaseController {
             XYChart.Series<String, Number> tempSeries = new XYChart.Series<>();
             tempSeries.setName("Temperature");
             dataModel.getWeatherDataList().forEach(data ->
-                tempSeries.getData().add(new XYChart.Data<>(
-                    data.getDateTime().toString(),
-                    data.getTemperature()
-                ))
+                    tempSeries.getData().add(new XYChart.Data<>(
+                            data.getDateTime().toString(), // Format date for readability
+                            data.getTemperature()
+                    ))
             );
             weatherChart.getData().add(tempSeries);
         }
 
         if (showHumidityCheck != null && showHumidityCheck.isSelected()) {
-            XYChart.Series<String, Number> humiditySeries = new XYChart.Series<>();
+            XYChart.Series<String, Number> humiditySeries =
+                    new XYChart.Series<>();
             humiditySeries.setName("Humidity");
             dataModel.getWeatherDataList().forEach(data ->
-                humiditySeries.getData().add(new XYChart.Data<>(
-                    data.getDateTime().toString(),
-                    data.getHumidity()
-                ))
+                    humiditySeries.getData().add(new XYChart.Data<>(
+                            data.getDateTime().toString(),
+                            data.getHumidity()
+                    ))
             );
             weatherChart.getData().add(humiditySeries);
         }

@@ -12,10 +12,10 @@ public class WeatherData {
     private String location;
     private String description;
 
-    public WeatherData(String dateTime, double temperature, double humidity, 
+    public WeatherData(String dateTime, double temperature, double humidity,
                       double precipitation) {
         this.dateTime = LocalDateTime.ofInstant(
-            Instant.ofEpochSecond(Long.parseLong(dateTime)), 
+            Instant.ofEpochSecond(Long.parseLong(dateTime)),
             ZoneId.systemDefault()
         );
         this.temperature = temperature;

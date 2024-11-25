@@ -7,19 +7,20 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tuni.fi.weatherDashboard.controller.DashboardController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tuni.fi.weatherDashboard.controller.DashboardController">
     <children>
         <!-- Top Navigation Bar -->
-        <HBox prefHeight="42.0" prefWidth="600.0">
+        <HBox prefHeight="42.0" prefWidth="800.0">
             <children>
-                <Label text="EVENT PLANNER'S DASHBOARD" />
-                <ToolBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="37.0" prefWidth="323.0">
+                <Label text="EVENT PLANNER'S DASHBOARD" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+                <ToolBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="37.0" prefWidth="500.0">
                     <items>
                         <Button fx:id="homeButton" mnemonicParsing="false" text="Home" />
                         <Button fx:id="historyButton" mnemonicParsing="false" text="History" />
@@ -31,39 +32,39 @@
         </HBox>
 
         <!-- Left Side Controls -->
-        <VBox layoutX="-5.0" layoutY="43.0" prefHeight="359.0" prefWidth="123.0">
+        <VBox layoutX="10.0" layoutY="50.0" prefHeight="500.0" prefWidth="150.0" spacing="10.0">
             <children>
-                <TextField fx:id="locationField" prefHeight="10.0" prefWidth="93.0" promptText="Search" />
+                <TextField fx:id="locationField" promptText="Enter City" />
                 <ComboBox fx:id="regionComboBox" prefWidth="150.0" promptText="Select Region" />
                 <ComboBox fx:id="dateRangeComboBox" prefWidth="150.0" promptText="Select Date Range" />
                 <CheckBox fx:id="showTemperatureCheck" mnemonicParsing="false" text="Show Temperature" />
                 <CheckBox fx:id="showHumidityCheck" mnemonicParsing="false" text="Show Humidity" />
                 <Button fx:id="searchButton" mnemonicParsing="false" onAction="#handleSearch" text="Search" />
-            <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSave" text="Save" />
+                <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSave" text="Save Preferences" />
             </children>
         </VBox>
 
-        <!-- Weather Data Display -->
-        <VBox layoutX="148.0" layoutY="75.0" prefHeight="163.0" prefWidth="155.0">
-            <Label layoutX="146.0" layoutY="56.0" text="Forecast" />
-            <Label fx:id="temperatureLabel" />
-            <Label fx:id="humidityLabel" />
-            <Label fx:id="descriptionLabel" />
+        <!-- Weather Data Summary Display -->
+        <VBox layoutX="180.0" layoutY="50.0" spacing="10.0" prefHeight="200.0" prefWidth="600.0">
+            <children>
+                <Label text="Weather Summary" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+                <ListView fx:id="weatherSummaryListView" prefHeight="150.0" prefWidth="580.0" />
+            </children>
         </VBox>
 
         <!-- Weather Chart -->
-        <HBox layoutX="119.0" layoutY="267.0" prefHeight="100.0" prefWidth="200.0">
+        <VBox layoutX="180.0" layoutY="280.0" prefHeight="300.0" prefWidth="600.0">
             <children>
-                <LineChart fx:id="weatherChart" prefHeight="81.0" prefWidth="155.0">
+                <Label text="Weather Visualization" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+                <LineChart fx:id="weatherChart" prefHeight="250.0" prefWidth="580.0">
                     <xAxis>
-                        <CategoryAxis side="BOTTOM" />
+                        <CategoryAxis side="BOTTOM" label="Date" />
                     </xAxis>
                     <yAxis>
-                        <NumberAxis side="LEFT" />
+                        <NumberAxis side="LEFT" label="Value" />
                     </yAxis>
                 </LineChart>
             </children>
-        </HBox>
-        <Label layoutX="149.0" layoutY="248.0" text="Weather Visualization" />
+        </VBox>
     </children>
 </AnchorPane>

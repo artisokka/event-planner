@@ -4,17 +4,17 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" 
-            prefHeight="400.0" prefWidth="600.0" 
-            xmlns="http://javafx.com/javafx/23" 
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="600.0" prefWidth="800.0"
+            xmlns="http://javafx.com/javafx/23"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="tuni.fi.weatherDashboard.controller.HistoryController">
     <children>
-        <!-- Navigation Bar -->
-        <HBox prefHeight="42.0" prefWidth="600.0">
+        <!-- Top Navigation Bar -->
+        <HBox prefHeight="42.0" prefWidth="800.0">
             <children>
-                <Label text="EVENT PLANNER'S DASHBOARD" />
-                <ToolBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="37.0" prefWidth="323.0">
+                <Label text="EVENT PLANNER'S DASHBOARD" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+                <ToolBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="37.0" prefWidth="500.0">
                     <items>
                         <Button fx:id="homeButton" mnemonicParsing="false" text="Home" />
                         <Button fx:id="historyButton" mnemonicParsing="false" text="History" />

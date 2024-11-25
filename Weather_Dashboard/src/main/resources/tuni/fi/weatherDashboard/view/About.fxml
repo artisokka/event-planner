@@ -8,16 +8,17 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" 
-            prefHeight="400.0" prefWidth="600.0" 
-            xmlns="http://javafx.com/javafx/23" 
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="600.0" prefWidth="800.0"
+            xmlns="http://javafx.com/javafx/23"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="tuni.fi.weatherDashboard.controller.AboutController">
     <children>
-        <HBox prefHeight="42.0" prefWidth="600.0">
+        <!-- Top Navigation Bar -->
+        <HBox prefHeight="42.0" prefWidth="800.0">
             <children>
-                <Label text="EVENT PLANNER'S DASHBOARD" />
-                <ToolBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="37.0" prefWidth="323.0">
+                <Label text="EVENT PLANNER'S DASHBOARD" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+                <ToolBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="37.0" prefWidth="500.0">
                     <items>
                         <Button fx:id="homeButton" mnemonicParsing="false" text="Home" />
                         <Button fx:id="historyButton" mnemonicParsing="false" text="History" />
@@ -27,12 +28,12 @@
                 </ToolBar>
             </children>
         </HBox>
-        
+
         <VBox layoutX="98.0" layoutY="66.0" prefHeight="290.0" prefWidth="405.0">
             <children>
                 <Label text="About" />
-                <TextArea fx:id="aboutText" prefHeight="200.0" prefWidth="200.0" 
-                         wrapText="true" 
+                <TextArea fx:id="aboutText" prefHeight="200.0" prefWidth="200.0"
+                         wrapText="true"
                          editable="false"
                          text="Event Planner's Weather Dashboard helps planners make informed decisions about outdoor events based on weather forecasts and air quality data." />
             </children>
