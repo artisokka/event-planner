@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.chart.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" 
-            prefHeight="400.0" prefWidth="600.0" 
-            xmlns="http://javafx.com/javafx/23" 
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="tuni.fi.weatherDashboard.controller.DashboardController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tuni.fi.weatherDashboard.controller.DashboardController">
     <children>
         <!-- Top Navigation Bar -->
         <HBox prefHeight="42.0" prefWidth="600.0">
@@ -34,7 +38,8 @@
                 <ComboBox fx:id="dateRangeComboBox" prefWidth="150.0" promptText="Select Date Range" />
                 <CheckBox fx:id="showTemperatureCheck" mnemonicParsing="false" text="Show Temperature" />
                 <CheckBox fx:id="showHumidityCheck" mnemonicParsing="false" text="Show Humidity" />
-                <Button fx:id="searchButton" mnemonicParsing="false" text="Search" onAction="#handleSearch" />
+                <Button fx:id="searchButton" mnemonicParsing="false" onAction="#handleSearch" text="Search" />
+            <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSave" text="Save" />
             </children>
         </VBox>
 
