@@ -27,7 +27,7 @@
                 </ToolBar>
             </children>
         </HBox>
-
+        
         <!-- Scrollable Grid for Weather Preferences -->
         <ScrollPane layoutX="149.0" layoutY="68.0" prefHeight="303.0" prefWidth="423.0">
             <content>

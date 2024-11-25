@@ -56,8 +56,8 @@ public class SavePreferencesController extends BaseController {
         preferencesGrid.getChildren().clear();
 
         for (int i = 0; i < locations.length && i < 6; i++) {
-            final String location = locations[i]; // Make location effectively final
-            final int index = i; // Make index effectively final
+            final String location = locations[i];
+            final int index = i;
             try {
                 // Fetch weather data for the location
                 DataModel weatherData = weatherService.fetchWeatherData(
@@ -88,7 +88,6 @@ public class SavePreferencesController extends BaseController {
             }
         }
     }
-
     private void handleRemoveLocation(String location) {
         // Remove from ListView
         savedLocationsList.getItems().remove(location);
