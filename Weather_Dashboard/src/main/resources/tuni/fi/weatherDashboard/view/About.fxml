@@ -11,8 +11,7 @@
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             prefHeight="600.0" prefWidth="800.0"
             xmlns="http://javafx.com/javafx/23"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="tuni.fi.weatherDashboard.controller.AboutController">
+            xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <!-- Top Navigation Bar -->
         <HBox prefHeight="42.0" prefWidth="800.0">

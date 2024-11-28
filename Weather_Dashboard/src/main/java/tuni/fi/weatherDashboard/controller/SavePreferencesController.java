@@ -1,23 +1,27 @@
 package tuni.fi.weatherDashboard.controller;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.layout.GridPane;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.image.ImageView;
+import javafx.application.Platform;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import java.util.prefs.Preferences;
 import javafx.scene.control.Label;
+import tuni.fi.weatherDashboard.utils.AlertUtils;
 import tuni.fi.weatherDashboard.service.WeatherApiService;
 import tuni.fi.weatherDashboard.model.DataModel;
 import tuni.fi.weatherDashboard.model.WeatherData;
-import javafx.application.Platform;
-
-import java.util.prefs.Preferences;
 
 public class SavePreferencesController extends BaseController {
 
-    @FXML private GridPane preferencesGrid;
     @FXML private ListView<String> savedLocationsList;
-    @FXML private Button removeButton;
-    @FXML private Button clearAllButton;
+    @FXML private GridPane preferencesGrid;
+    private ObservableList<String> savedLocations;
 
     private Preferences userPreferences;
     private WeatherApiService weatherService;
@@ -26,110 +30,102 @@ public class SavePreferencesController extends BaseController {
     @Override
     protected void initialize() {
         super.initialize();
-        weatherService = new WeatherApiService();
         userPreferences = Preferences.userNodeForPackage(this.getClass());
+        weatherService = new WeatherApiService(); // Initialize weather service
+
+        savedLocations = FXCollections.observableArrayList();
+        savedLocationsList.setItems(savedLocations); // Bind ListView to ObservableList
+
         loadSavedLocations();
-
-        if (removeButton != null) {
-            removeButton.setOnAction(event -> handleRemoveSelectedLocation());
-        }
-
-        if (clearAllButton != null) {
-            clearAllButton.setOnAction(event -> handleClearAllLocations());
-        }
     }
 
     private void loadSavedLocations() {
         String savedLocs = userPreferences.get("savedLocations", "");
         if (!savedLocs.isEmpty()) {
             String[] locations = savedLocs.split(",");
-            savedLocationsList.getItems().setAll(locations);  // Rebuild ListView items
-            updateWeatherForLocations(locations);
-        } else {
-            // If no locations are saved, clear the weather grid
-            preferencesGrid.getChildren().clear();
+            savedLocations.setAll(locations); // Update the ObservableList with loaded data
+            displayWeatherCards();
         }
     }
 
-    private void updateWeatherForLocations(String[] locations) {
-        // Clear the grid first to avoid leftover data
-        preferencesGrid.getChildren().clear();
+    private void displayWeatherCards() {
+        preferencesGrid.getChildren().clear(); // Clear existing content
 
-        for (int i = 0; i < locations.length && i < 6; i++) {
-            final String location = locations[i];
-            final int index = i;
-            try {
-                // Fetch weather data for the location
-                DataModel weatherData = weatherService.fetchWeatherData(
-                        location.trim());
-                WeatherData currentWeather = weatherData.getWeatherDataList().
-                        get(0);
+        int row = 0;
+        int col = 0;
 
-                String weatherInfo = String.format(
-                        "Temp: %.1f°C, Humidity: %.1f%%",
-                        currentWeather.getTemperature(), currentWeather.
-                        getHumidity());
+        for (int i = 0; i < savedLocations.size(); i++) {
+            String location = savedLocations.get(i);
+            VBox weatherCard = createWeatherCard(location);
+            preferencesGrid.add(weatherCard, col, row);
 
-                // Create a label to display the weather info and add it to the grid
-                Label weatherLabel = new Label(location + "\n" + weatherInfo);
-                preferencesGrid.add(weatherLabel, 0, i);
-
-                // Create a trash can button to remove the weather info and add it to the grid
-                Button removeButton = new Button("🗑️");
-                removeButton.setOnAction(event -> handleRemoveLocation(
-                        location)); // Pass final location
-                preferencesGrid.add(removeButton, 1, i);
-
-            } catch (Exception e) {
-                // Handle errors in case of failed weather data fetch
-                Label errorLabel = new Label(location +
-                        "\nError fetching weather");
-                preferencesGrid.add(errorLabel, 0, i);
+            // Move to next column or row if the column limit is reached
+            if (col == 1) {
+                col = 0;
+                row++;
+            } else {
+                col++;
             }
         }
     }
-    private void handleRemoveLocation(String location) {
-        // Remove from ListView
-        savedLocationsList.getItems().remove(location);
 
-        // Remove from preferences
-        String savedLocs = userPreferences.get("savedLocations", "");
-        String updatedLocs = savedLocs.replace(location + ",", "").replace(
-                location, "");
-        userPreferences.put("savedLocations", updatedLocs);
+    private VBox createWeatherCard(String location) {
+        VBox weatherCard = new VBox();
+        weatherCard.setSpacing(10);
+        weatherCard.setStyle(
+                "-fx-background-color: #D0E7F9; -fx-padding: 10; -fx-border-radius: 8;");
 
-        // Reload saved locations and update the grid
-        loadSavedLocations();
+        // Fetch weather data asynchronously
+        fetchWeatherDataForLocation(location, weatherCard);
+
+        return weatherCard;
     }
 
-    /**
-     * Handle the removal of the selected location from the ListView.
-     */
-    private void handleRemoveSelectedLocation() {
-        String selectedLocation = savedLocationsList.getSelectionModel().
-                getSelectedItem();
-        if (selectedLocation != null) {
-            savedLocationsList.getItems().remove(selectedLocation);
-            saveLocationsToPreferences(); // Update preferences after removal
-            loadSavedLocations(); // Reload saved locations and refresh grid
-        }
+    private void fetchWeatherDataForLocation(String location, VBox weatherCard) {
+        new Thread(() -> {
+            try {
+                DataModel weatherDataModel = weatherService.fetchWeatherData(
+                        location);
+                if (weatherDataModel != null && !weatherDataModel.
+                        getWeatherDataList().isEmpty()) {
+                    WeatherData currentWeather = weatherDataModel.
+                            getWeatherDataList().get(0);
+
+                    // Update UI with weather data on the JavaFX application thread
+                    Platform.runLater(() -> {
+                        Label locationLabel = new Label(location);
+                        locationLabel.setFont(Font.font("Arial", 16));
+
+                        Text tempLabel = new Text(String.format(
+                                "Temperature: %.1f°C", currentWeather.
+                                        getTemperature()));
+                        tempLabel.setFont(Font.font("Arial", 14));
+
+                        Text humidityLabel = new Text(String.format(
+                                "Humidity: %.1f%%", currentWeather.
+                                        getHumidity()));
+                        humidityLabel.setFont(Font.font("Arial", 14));
+
+                        ImageView icon = new ImageView(
+                                "/img/sunny.png");  // Placeholder for icon
+                        icon.setFitWidth(50);
+                        icon.setFitHeight(50);
+
+                        weatherCard.getChildren().addAll(locationLabel,
+                                tempLabel, humidityLabel, icon);
+                    });
+                }
+            } catch (Exception e) {
+                System.err.println(
+                        "Error fetching weather data for location: " + location);
+                e.printStackTrace();
+            }
+        }).start();
     }
 
-    /**
-     * Handle clearing all saved locations from the ListView and preferences.
-     */
-    private void handleClearAllLocations() {
-        savedLocationsList.getItems().clear(); // Clear ListView
-        userPreferences.remove("savedLocations"); // Clear preferences
-        preferencesGrid.getChildren().clear(); // Clear the weather grid
-    }
-
-    /**
-     * Save the current list of locations back to preferences.
-     */
-    private void saveLocationsToPreferences() {
+    public void saveLocations() {
         StringBuilder locationsBuilder = new StringBuilder();
-        for (String location : savedLocationsList.getItems()) {
+        for (String location : savedLocations) {
             if (locationsBuilder.length() > 0) {
                 locationsBuilder.append(",");
             }
@@ -137,4 +133,35 @@ public class SavePreferencesController extends BaseController {
         }
         userPreferences.put("savedLocations", locationsBuilder.toString());
     }
+
+    public void addLocation(String location) {
+        if (!savedLocations.contains(location)) {
+            savedLocations.add(location); // ObservableList updates automatically
+            saveLocations();
+            displayWeatherCards();  // Update the UI with the new location
+        } else {
+            AlertUtils.showAlert("Info", "Location is already saved");
+        }
+    }
+
+    public void removeSelectedLocation() {
+        String selectedLocation = savedLocationsList.getSelectionModel().
+                getSelectedItem();
+        if (selectedLocation != null) {
+            savedLocations.remove(selectedLocation); // ObservableList updates automatically
+            saveLocations(); // Persist the updated list
+            displayWeatherCards();  // Update the UI with the removed location
+            AlertUtils.showAlert("Success", "Location removed successfully");
+        } else {
+            AlertUtils.showAlert("Error", "No location selected to remove");
+        }
+    }
+
+    public void removeAllLocations() {
+        savedLocations.clear(); // ObservableList updates automatically
+        saveLocations(); // Save the empty list
+        displayWeatherCards(); // Clear the weather cards from UI
+        AlertUtils.showAlert("Success", "All locations removed successfully");
+    }
+
 }

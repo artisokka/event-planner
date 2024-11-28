@@ -7,8 +7,7 @@
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             prefHeight="600.0" prefWidth="800.0"
             xmlns="http://javafx.com/javafx/23"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="tuni.fi.weatherDashboard.controller.HistoryController">
+            xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <!-- Top Navigation Bar -->
         <HBox prefHeight="42.0" prefWidth="800.0">
@@ -32,10 +31,9 @@
                 <TextField fx:id="searchLocationField" promptText="Search Location" />
                 <TableView fx:id="historyTable" prefHeight="165.0" prefWidth="353.0">
                     <columns>
-                        <TableColumn fx:id="cityColumn" prefWidth="75.0" text="City" />
-                        <TableColumn fx:id="dateColumn" prefWidth="75.0" text="Date" />
-                        <TableColumn fx:id="temperatureColumn" prefWidth="75.0" text="Temperature" />
-                        <TableColumn fx:id="airQualityColumn" prefWidth="75.0" text="Air Quality" />
+                        <TableColumn fx:id="cityColumn" prefWidth="150.0" text="City" />
+                        <TableColumn fx:id="dateColumn" prefWidth="150.0" text="Date" />
+                        <TableColumn fx:id="temperatureColumn" prefWidth="150.0" text="Temperature" />
                     </columns>
                 </TableView>
             </children>

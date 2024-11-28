@@ -1,8 +1,6 @@
 package tuni.fi.weatherDashboard.controller;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.Preferences;
 import tuni.fi.weatherDashboard.model.DataModel;
 import tuni.fi.weatherDashboard.model.WeatherData;
 import tuni.fi.weatherDashboard.service.WeatherApiService;
@@ -10,10 +8,11 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
 import javafx.application.Platform;
+import tuni.fi.weatherDashboard.utils.AlertUtils;
 
 public class DashboardController extends BaseController {
+
     @FXML private TextField locationField;
     @FXML private ComboBox<String> regionComboBox;
     @FXML private ComboBox<String> dateRangeComboBox;
@@ -28,7 +27,7 @@ public class DashboardController extends BaseController {
     @FXML private ListView weatherSummaryListView;
 
     private WeatherApiService weatherService;
-    private List<String> savedLocations = new ArrayList<>();
+    private HistoryController historyController;
 
     @FXML
     @Override
@@ -37,13 +36,14 @@ public class DashboardController extends BaseController {
         weatherService = new WeatherApiService();
 
         setupInitialState();
-        // Load saved locations from Preferences
-        loadSavedLocationsFromPreferences();
 
         // Add debug prints to verify initialization
         System.out.println("DashboardController initialized");
+        System.out.println("HistoryController initialized");
         System.out.println("Location field null? " + (locationField == null));
         System.out.println("Search button null? " + (searchButton == null));
+
+        this.historyController = ControllerHolder.getHistoryController();
     }
 
     private void setupInitialState() {
@@ -87,6 +87,16 @@ public class DashboardController extends BaseController {
         }
     }
 
+    private void saveSearchToHistory(WeatherData weatherData) {
+        if (this.historyController == null) {
+            System.out.println(
+                    "Can't add search to history: historyController is null");
+        } else {
+            this.historyController.addSearchToHistory(weatherData);
+            System.out.println("Adding to history: " + weatherData);
+        }
+    }
+
     @FXML
     private void handleSearch() {
         if (locationField == null) {
@@ -98,17 +108,36 @@ public class DashboardController extends BaseController {
         System.out.println("Searching for location: " + location);
 
         if (location == null || location.trim().isEmpty()) {
-            showAlert("Error", "Please enter a location");
+            AlertUtils.showAlert("Error", "Please enter a location");
             return;
         }
 
         try {
             System.out.println("Fetching weather data...");
-            DataModel weatherData = weatherService.fetchWeatherData(location.trim());
-            updateUI(weatherData);
+            DataModel weatherDataModel = weatherService.fetchWeatherData(
+                    location.trim());
+            List<WeatherData> forecastData = weatherDataModel.
+                    getWeatherDataList();
+
+            if (forecastData.isEmpty()) {
+                AlertUtils.showAlert("Info",
+                        "No weather data available for the given location.");
+                return;
+            }
+
+            // Current weather summary: first item
+            WeatherData currentWeather = forecastData.get(0);
+
+            // Add to history
+            saveSearchToHistory(currentWeather);
+
+            // Update UI
+            updateUI(weatherDataModel);
+
         } catch (Exception e) {
             System.err.println("Error fetching weather data: " + e.getMessage());
-            showAlert("Error", "Failed to fetch weather data: " + e.getMessage());
+            AlertUtils.showAlert("Error", "Failed to fetch weather data: " + e.
+                    getMessage());
         }
     }
 
@@ -121,62 +150,16 @@ public class DashboardController extends BaseController {
 
         String location = locationField.getText();
         if (location == null || location.trim().isEmpty()) {
-            showAlert("Error", "Please enter a location to save");
+            AlertUtils.showAlert("Error", "Please enter a location to save");
             return;
         }
 
         location = location.trim();
 
-        // Avoid duplicate entries
-        if (savedLocations.contains(location)) {
-            showAlert("Info", "Location is already saved");
-            return;
-        }
-
-        // Save the location in-memory
-        savedLocations.add(location);
-
-        // Persist locations to Preferences
-        saveLocationsToPreferences();
-
-        System.out.println("Location saved: " + location);
-        showAlert("Success", "Location saved successfully");
-    }
-
-    /**
-     * Save the list of saved locations to Preferences.
-     */
-    private void saveLocationsToPreferences() {
-        Preferences userPreferences = Preferences.userNodeForPackage(this.
-                getClass());
-        StringBuilder locationsBuilder = new StringBuilder();
-        for (String location : savedLocations) {
-            if (locationsBuilder.length() > 0) {
-                locationsBuilder.append(",");
-            }
-            locationsBuilder.append(location);
-        }
-        userPreferences.put("savedLocations", locationsBuilder.toString());
-    }
-
-    /**
-     * Load saved locations from Preferences into the in-memory list.
-     */
-    private void loadSavedLocationsFromPreferences() {
-        Preferences userPreferences = Preferences.userNodeForPackage(this.
-                getClass());
-        String savedLocs = userPreferences.get("savedLocations", "");
-        if (!savedLocs.isEmpty()) {
-            String[] locations = savedLocs.split(",");
-            savedLocations.clear();
-            for (String location : locations) {
-                savedLocations.add(location);
-            }
-        }
-    }
-
-    public List<String> getSavedLocations() {
-        return new ArrayList<>(savedLocations);
+        // Save the location to SavePreferencesController
+        SavePreferencesController preferencesController = ControllerHolder.
+                getPreferencesController();
+        preferencesController.addLocation(location);
     }
 
     private void updateUI(DataModel dataModel) {
@@ -187,19 +170,23 @@ public class DashboardController extends BaseController {
 
         Platform.runLater(() -> {
             try {
-                WeatherData currentWeather = dataModel.getWeatherDataList().get(0);
+                WeatherData currentWeather = dataModel.getWeatherDataList().get(
+                        0);
 
                 // Update labels with null checks
                 if (temperatureLabel != null) {
-                    temperatureLabel.setText(String.format("Temperature: %.1f°C",
-                        currentWeather.getTemperature()));
+                    temperatureLabel.setText(String.
+                            format("Temperature: %.1f°C",
+                                    currentWeather.getTemperature()));
                 }
                 if (humidityLabel != null) {
                     humidityLabel.setText(String.format("Humidity: %.1f%%",
-                        currentWeather.getHumidity()));
+                            currentWeather.getHumidity()));
                 }
-                if (descriptionLabel != null && currentWeather.getDescription() != null) {
-                    descriptionLabel.setText("Conditions: " + currentWeather.getDescription());
+                if (descriptionLabel != null &&
+                        currentWeather.getDescription() != null) {
+                    descriptionLabel.setText("Conditions: " + currentWeather.
+                            getDescription());
                 }
                 // Update weather summary ListView for current weather
                 updateWeatherSummaryListView(currentWeather);
@@ -237,7 +224,6 @@ public class DashboardController extends BaseController {
         }
     }
 
-
     private void updateChart(DataModel dataModel) {
         if (weatherChart == null) {
             System.err.println("Weather chart is null!");
@@ -251,7 +237,7 @@ public class DashboardController extends BaseController {
             tempSeries.setName("Temperature");
             dataModel.getWeatherDataList().forEach(data ->
                     tempSeries.getData().add(new XYChart.Data<>(
-                            data.getDateTime().toString(), // Format date for readability
+                            data.getDateTime().toString(),
                             data.getTemperature()
                     ))
             );
@@ -270,15 +256,5 @@ public class DashboardController extends BaseController {
             );
             weatherChart.getData().add(humiditySeries);
         }
-    }
-
-    private void showAlert(String title, String content) {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle(title);
-            alert.setHeaderText(null);
-            alert.setContentText(content);
-            alert.showAndWait();
-        });
     }
 }

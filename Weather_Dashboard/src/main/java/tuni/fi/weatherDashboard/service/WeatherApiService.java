@@ -37,9 +37,9 @@ public class WeatherApiService {
                     cityName);
             String jsonResponse = sendGetRequest(apiUrl);
 
-            // System.out.println("Raw API Response: " + jsonResponse);
+            //System.out.println("Raw API Response: " + jsonResponse);
 
-            weatherDataList = parse5DayForecast(jsonResponse);
+            weatherDataList = parse5DayForecast(cityName, jsonResponse);
 
             System.out.println("Successfully retrieved weather forecast for: " +
                     cityName);
@@ -52,7 +52,8 @@ public class WeatherApiService {
         return new DataModel(weatherDataList);
     }
 
-    private List<WeatherData> parse5DayForecast(String jsonResponse) {
+    private List<WeatherData> parse5DayForecast(String location,
+            String jsonResponse) {
         List<WeatherData> weatherDataList = new ArrayList<>();
         try {
             JSONObject jsonObject = new JSONObject(jsonResponse);
@@ -81,7 +82,7 @@ public class WeatherApiService {
                 String description = forecast.getJSONArray("weather").
                         getJSONObject(0).getString("description");
 
-                WeatherData weatherData = new WeatherData(
+                WeatherData weatherData = new WeatherData(location,
                         String.valueOf(dt), // Pass the Unix timestamp as a String to WeatherData constructor
                         temperature,
                         humidity,
@@ -117,7 +118,7 @@ public class WeatherApiService {
                 String description = dailyData.get(0).getDescription();
 
                 // Create summary WeatherData for the day
-                WeatherData dailySummary = new WeatherData(
+                WeatherData dailySummary = new WeatherData(location,
                         String.valueOf(dailyData.get(0).getDateTime().
                                 toEpochSecond(java.time.ZoneOffset.UTC)), // Pass Unix timestamp here
                         avgTemp,
