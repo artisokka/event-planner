@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" 
+            prefHeight="400.0" prefWidth="600.0" 
+            xmlns="http://javafx.com/javafx/23" 
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tuni.fi.weatherDashboard.controller.HistoryController">
+    <children>
+        <!-- Navigation Bar -->
+        <HBox prefHeight="42.0" prefWidth="600.0">
+            <children>
+                <Label text="EVENT PLANNER'S DASHBOARD" />
+                <ToolBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="37.0" prefWidth="323.0">
+                    <items>
+                        <Button fx:id="homeButton" mnemonicParsing="false" text="Home" />
+                        <Button fx:id="historyButton" mnemonicParsing="false" text="History" />
+                        <Button fx:id="savedPreferencesButton" mnemonicParsing="false" text="Saved Preferences" />
+                        <Button fx:id="aboutButton" mnemonicParsing="false" text="About" />
+                    </items>
+                </ToolBar>
+            </children>
+        </HBox>
+
+        <!-- Location History -->
+        <VBox layoutX="24.0" layoutY="125.0" prefHeight="188.0" prefWidth="349.0">
+            <children>
+                <Label text="Calendar" />
+                <TextField fx:id="searchLocationField" promptText="Search Location" />
+                <TableView fx:id="historyTable" prefHeight="165.0" prefWidth="353.0">
+                    <columns>
+                        <TableColumn fx:id="cityColumn" prefWidth="75.0" text="City" />
+                        <TableColumn fx:id="dateColumn" prefWidth="75.0" text="Date" />
+                        <TableColumn fx:id="temperatureColumn" prefWidth="75.0" text="Temperature" />
+                        <TableColumn fx:id="airQualityColumn" prefWidth="75.0" text="Air Quality" />
+                    </columns>
+                </TableView>
+            </children>
+        </VBox>
+
+        <!-- Events List -->
+        <VBox layoutX="398.0" layoutY="131.0" prefHeight="176.0" prefWidth="188.0">
+            <children>
+                <Label text="My Events" />
+                <ListView fx:id="eventsList" prefHeight="200.0" prefWidth="200.0" />
+            </children>
+        </VBox>
+
+        <!-- Historical Data Chart -->
+        <VBox layoutX="24.0" layoutY="324.0" prefHeight="68.0" prefWidth="562.0">
+            <children>
+                <LineChart fx:id="historyChart" prefHeight="93.0" prefWidth="562.0">
+                    <xAxis>
+                        <CategoryAxis side="BOTTOM" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis side="LEFT" />
+                    </yAxis>
+                </LineChart>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

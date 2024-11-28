@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23" prefHeight="600" prefWidth="800" style="-fx-background-color: #f0f4f7;"
+            fx:controller="tuni.fi.weatherDashboard.controller.AboutController">
+
+    <!-- Top Section: Navigation Bar -->
+    <top>
+        <AnchorPane prefHeight="42.0" style="-fx-background-color: #3F51B5;">
+            <children>
+                <!-- Styled label, aligned left -->
+                <Label text="EVENT PLANNER'S DASHBOARD" 
+                       style="-fx-font-size: 20px; -fx-text-fill: white; -fx-font-weight: bold;" 
+                       AnchorPane.leftAnchor="10.0" 
+                       AnchorPane.topAnchor="5.0" />
+
+                <!-- Styled toolbar, aligned right -->
+                <ToolBar style="-fx-background-color: transparent;" 
+                         AnchorPane.rightAnchor="10.0" 
+                         AnchorPane.topAnchor="0.0">
+                    <items>
+                        <Button fx:id="homeButton" text="Home" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" />
+                        <Button fx:id="historyButton" text="History" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" />
+                        <Button fx:id="savedPreferencesButton" text="Saved Preferences" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" />
+                        <Button fx:id="aboutButton" text="About" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" />
+                    </items>
+                </ToolBar>
+            </children>
+        </AnchorPane>
+    </top>
+
+    <!-- Center Section: About Content -->
+    <center>
+        <VBox spacing="20" style="-fx-padding: 30;">
+            <Label text="About" 
+                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #37474F;" />
+            <TextArea fx:id="aboutText" wrapText="true" editable="false" prefHeight="300.0" prefWidth="400.0"
+                      style="-fx-font-size: 14px; -fx-background-color: #ffffff; -fx-border-color: #e0e0e0; -fx-border-width: 1;"
+                      text="Event Planner's Weather Dashboard helps planners make informed decisions about outdoor events based on weather forecasts and air quality data." />
+        </VBox>
+    </center>
+</BorderPane>
