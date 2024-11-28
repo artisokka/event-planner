@@ -32,15 +32,17 @@ public class BaseController {
     }
 
     protected void navigateTo(String fxml) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/tuni/fi/weatherDashboard/view/" + fxml));
-            Parent root = loader.load();
-            Stage stage = (Stage) homeButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    try {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/tuni/fi/weatherDashboard/view/" + fxml));
+        Parent root = loader.load();
+        Stage stage = (Stage) homeButton.getScene().getWindow();
+        stage.setScene(new Scene(root));
+    } catch (IOException e) {
+        System.err.println("Failed to load FXML file: " + fxml);
+    } catch (NullPointerException e) {
+        System.err.println("FXML file not found or button not initialized properly: " + fxml);
     }
+}
 }
 
 // tuni.fi.weatherDashboard.controller/HistoryController.java

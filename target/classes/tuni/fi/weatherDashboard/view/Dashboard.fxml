@@ -18,7 +18,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.DatePicker?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23" prefHeight="600" prefWidth="800" style="-fx-background-color: #f0f4f7;">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23" prefHeight="600" prefWidth="800" style="-fx-background-color: #f0f4f7;" fx:controller="tuni.fi.weatherDashboard.controller.BaseController">
 
     <!-- Top Section: Navigation Bar -->
     <top>
@@ -35,11 +35,11 @@
                      AnchorPane.rightAnchor="10.0" 
                      AnchorPane.topAnchor="0.0">
                 <items>
-                    <Button text="Home" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" />
-                    <Button text="History" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" />
-                    <Button text="Saved Preferences" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" />
-                    <Button text="About" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" />
-                </items>
+                        <Button fx:id="homeButton" text="Home" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" />
+                        <Button fx:id="historyButton" text="History" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" />
+                        <Button fx:id="savedPreferencesButton" text="Saved Preferences" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" />
+                        <Button fx:id="aboutButton" text="About" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" />
+                    </items>
             </ToolBar>
         </children>
     </AnchorPane>

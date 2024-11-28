@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23" prefHeight="600" prefWidth="800" style="-fx-background-color: #f0f4f7;"
-            fx:controller="tuni.fi.weatherDashboard.controller.AboutController">
+            fx:controller="tuni.fi.weatherDashboard.controller.BaseController">
 
     <!-- Top Section: Navigation Bar -->
     <top>
