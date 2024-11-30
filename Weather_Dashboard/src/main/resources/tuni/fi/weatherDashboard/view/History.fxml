@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="600" prefWidth="800" style="-fx-background-color: #f0f4f7;" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" >
+
+    <!-- Top Section -->
+    <top>
+        <AnchorPane prefHeight="42.0" style="-fx-background-color: #3F51B5;">
+            <children>
+                <Label style="-fx-font-size: 20px; -fx-text-fill: white; -fx-font-weight: bold;" 
+                       text="EVENT PLANNER'S DASHBOARD" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0" />
+                <ToolBar style="-fx-background-color: transparent;" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">
+                    <items>
+                        <Button fx:id="homeButton" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" text="Home" />
+                        <Button fx:id="historyButton" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" text="History" />
+                        <Button fx:id="savedPreferencesButton" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" text="Saved Preferences" />
+                        <Button fx:id="aboutButton" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" text="About" />
+                    </items>
+                </ToolBar>
+            </children>
+        </AnchorPane>
+    </top>
+
+    <!-- Main Section: Central Content -->
+    <center>
+        <VBox spacing="20" style="-fx-padding: 15;">
+            <GridPane hgap="20" vgap="20" style="-fx-padding: 10;">
+                <!-- Left Column: Historical Data -->
+                <VBox style="-fx-spacing: 10;" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Calendar" />
+                    <TextField fx:id="searchLocationField" promptText="Search Location" style="-fx-padding: 5;" />
+                    <TableView fx:id="historyTable" prefHeight="200.0" prefWidth="450.0" style="-fx-background-color: white;">
+                        <columns>
+                            <TableColumn fx:id="cityColumn" prefWidth="100.0" text="City" />
+                            <TableColumn fx:id="dateColumn" prefWidth="100.0" text="Date" />
+                            <TableColumn fx:id="temperatureColumn" prefWidth="200.0" text="Temperature" />
+                        </columns>
+                    </TableView>
+                </VBox>
+
+                <!-- Right Column: Events -->
+                <VBox style="-fx-spacing: 10;" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="My Events" />
+                    <ListView fx:id="eventsList" prefHeight="300.0" prefWidth="300.0" style="-fx-background-color: white;" />
+                </VBox>
+            </GridPane>
+
+            <!-- Bottom Section: Line Chart -->
+            <VBox>
+                <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Historical Data Visualization" />
+                <LineChart fx:id="historyChart" prefHeight="250.0" prefWidth="600.0">
+                    <xAxis>
+                        <CategoryAxis side="BOTTOM" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis side="LEFT" />
+                    </yAxis>
+                </LineChart>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>
