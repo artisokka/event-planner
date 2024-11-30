@@ -12,6 +12,7 @@ import javafx.application.Platform;
 import tuni.fi.weatherDashboard.model.AirQualityData;
 import tuni.fi.weatherDashboard.service.OpenAQService;
 import tuni.fi.weatherDashboard.utils.AlertUtils;
+import tuni.fi.weatherDashboard.utils.StringUtils;
 
 public class DashboardController extends BaseController {
 
@@ -109,7 +110,7 @@ public class DashboardController extends BaseController {
             return;
         }
 
-        String location = locationField.getText();
+        String location = StringUtils.capitalizeCities(locationField.getText());
         System.out.println("Searching for location: " + location);
 
         if (location == null || location.trim().isEmpty()) {

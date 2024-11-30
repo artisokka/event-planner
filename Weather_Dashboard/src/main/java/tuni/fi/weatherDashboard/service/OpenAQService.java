@@ -10,6 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import tuni.fi.weatherDashboard.utils.AlertUtils;
 
 public class OpenAQService {
 
@@ -19,15 +20,17 @@ public class OpenAQService {
 
     // Method to fetch air quality data by city
     public AirQualityData fetchAirQualityData(String cityName) {
-        if (cityName == null || cityName.trim().isEmpty()) {
+        if (cityName == null || cityName.isEmpty()) {
             throw new IllegalArgumentException("Please enter a city name");
         }
 
         try {
             // Encode the city name
-            String encodedCity = URLEncoder.encode(cityName.trim(),
+            String encodedCity = URLEncoder.encode(cityName,
                     StandardCharsets.UTF_8.toString());
             String apiUrl = String.format("%s?city=%s", BASE_URL, encodedCity);
+
+            System.out.println("Api URL: " + apiUrl);
 
             System.out.println("Fetching air quality data for: " + cityName);
             String jsonResponse = sendGetRequest(apiUrl);
@@ -124,8 +127,9 @@ public class OpenAQService {
         } catch (Exception e) {
             System.err.println("Error parsing air quality data: " + e.
                     getMessage());
-            throw new RuntimeException("Failed to parse air quality data: " + e.
-                    getMessage(), e);
+            AlertUtils.showAlert("Error", "Failed to parse air quality data: " +
+                    e.getMessage());
+            return null;
         }
     }
 }
