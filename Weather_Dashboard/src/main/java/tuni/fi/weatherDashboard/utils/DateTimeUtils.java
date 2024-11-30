@@ -12,7 +12,7 @@ public class DateTimeUtils {
 
         // Define the custom format pattern
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
-                "dd.MM. 'at' HH.mm");
+                "dd.MM.\nHH.mm");
 
         // Format the LocalDateTime
         String formattedDateTime = dateTime.format(formatter);
