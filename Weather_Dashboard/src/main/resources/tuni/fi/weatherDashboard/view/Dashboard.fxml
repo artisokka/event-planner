@@ -2,6 +2,7 @@
 
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
@@ -44,13 +45,30 @@
             </children>
         </VBox>
 
-        <!-- Weather Data Summary Display -->
-        <VBox layoutX="180.0" layoutY="50.0" spacing="10.0" prefHeight="200.0" prefWidth="600.0">
-            <children>
-                <Label text="Weather Summary" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
-                <ListView fx:id="weatherSummaryListView" prefHeight="150.0" prefWidth="580.0" />
-            </children>
-        </VBox>
+        <HBox layoutX="180.0" layoutY="50.0" spacing="20.0">
+            <!-- Weather Data Summary Display -->
+            <VBox spacing="10.0" prefHeight="250.0" prefWidth="200.0">
+                <children>
+                    <Label text="Weather Summary" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+                    <ListView fx:id="weatherSummaryListView" prefHeight="150.0" prefWidth="180.0" />
+                </children>
+            </VBox>
+
+            <!-- Air Quality Chart -->
+            <VBox spacing="10.0" prefHeight="250.0" prefWidth="350.0">
+                <children>
+                    <Label text="Air Quality Visualization" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+                    <BarChart fx:id="airQualityChart" prefHeight="200.0" prefWidth="200.0">
+                        <xAxis>
+                            <CategoryAxis side="BOTTOM" label="Pollutant" />
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis side="LEFT" label="Concentration (µg/m³)" />
+                        </yAxis>
+                    </BarChart>
+                </children>
+            </VBox>
+        </HBox>
 
         <!-- Weather Chart -->
         <VBox layoutX="180.0" layoutY="280.0" prefHeight="300.0" prefWidth="600.0">
@@ -62,21 +80,6 @@
                     </xAxis>
                     <yAxis>
                         <NumberAxis side="LEFT" label="Value" />
-                    </yAxis>
-                </LineChart>
-            </children>
-        </VBox>
-
-        <!-- Air Quality Chart -->
-        <VBox layoutX="10.0" layoutY="300.0" prefHeight="250.0" prefWidth="150.0">
-            <children>
-                <Label text="Air Quality Visualization" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
-                <LineChart fx:id="airQualityChart" prefHeight="250.0" prefWidth="580.0">
-                    <xAxis>
-                        <CategoryAxis side="BOTTOM" label="Pollutant" />
-                    </xAxis>
-                    <yAxis>
-                        <NumberAxis side="LEFT" label="Concentration (µg/m³)" />
                     </yAxis>
                 </LineChart>
             </children>

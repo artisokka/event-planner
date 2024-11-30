@@ -9,6 +9,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.application.Platform;
+import javafx.scene.chart.BarChart;
 import tuni.fi.weatherDashboard.model.AirQualityData;
 import tuni.fi.weatherDashboard.service.OpenAQService;
 import tuni.fi.weatherDashboard.utils.AlertUtils;
@@ -28,7 +29,7 @@ public class DashboardController extends BaseController {
     @FXML private Label humidityLabel;
     @FXML private Label descriptionLabel;
     @FXML private ListView weatherSummaryListView;
-    @FXML private LineChart<String, Number> airQualityChart;
+    @FXML private BarChart<String, Number> airQualityChart;
 
     private WeatherApiService weatherService;
     private OpenAQService airQualityService;
@@ -68,9 +69,13 @@ public class DashboardController extends BaseController {
         }
 
         if (weatherChart != null) {
-            weatherChart.setTitle("Weather Data");
             weatherChart.getXAxis().setLabel("Time");
             weatherChart.getYAxis().setLabel("Value");
+        }
+
+        if (airQualityChart != null) {
+            airQualityChart.getXAxis().setLabel("Pollutants");
+            airQualityChart.getYAxis().setLabel("Concentration");
         }
 
         if (searchButton != null) {
@@ -135,14 +140,15 @@ public class DashboardController extends BaseController {
             // Fetch air quality data
             System.out.println("Fetching air quality data...");
             airQualityService.fetchAirQualityData(location);
-            //AirQualityData airQualityData = airQualityService.fetchAirQualityData(location.trim());
+            AirQualityData airQualityData = airQualityService.
+                    fetchAirQualityData(location.trim());
 
             // Save to history
             WeatherData currentWeather = forecastData.get(0);
             saveSearchToHistory(currentWeather);
 
             // Update UI
-            //updateUI(weatherDataModel, airQualityData);
+            updateUI(weatherDataModel, airQualityData);
 
         } catch (Exception e) {
             System.err.println("Error fetching data: " + e.getMessage());
@@ -204,9 +210,9 @@ public class DashboardController extends BaseController {
                 updateWeatherSummaryListView(currentWeather);
 
                 // Update air quality summary
-                //if (airQualityData != null) {
-                //    updateAirQualityChart(airQualityData);
-                //}
+                if (airQualityData != null) {
+                    updateAirQualityChart(airQualityData);
+                }
 
                 // Update weather chart
                 updateChart(dataModel);
@@ -247,12 +253,15 @@ public class DashboardController extends BaseController {
             return;
         }
 
+        // Clear existing data
         airQualityChart.getData().clear();
 
         if (airQualityData != null) {
+            // Create a new series for the BarChart
             XYChart.Series<String, Number> series = new XYChart.Series<>();
             series.setName("Air Quality");
 
+            // Add data to the series, corresponding to the pollutants
             series.getData().add(new XYChart.Data<>("PM2.5", airQualityData.
                     getPm25()));
             series.getData().add(new XYChart.Data<>("PM10", airQualityData.
@@ -260,9 +269,11 @@ public class DashboardController extends BaseController {
             series.getData().add(new XYChart.Data<>("NO2", airQualityData.
                     getNo2()));
 
+            // Add the series to the BarChart
             airQualityChart.getData().add(series);
         }
     }
+
 
 
     private void updateChart(DataModel dataModel) {
@@ -275,7 +286,8 @@ public class DashboardController extends BaseController {
 
         if (showTemperatureCheck != null && showTemperatureCheck.isSelected()) {
             XYChart.Series<String, Number> tempSeries = new XYChart.Series<>();
-            tempSeries.setName("Temperature");
+            tempSeries.setName("Temperature °C");
+
             dataModel.getWeatherDataList().forEach(data ->
                     tempSeries.getData().add(new XYChart.Data<>(
                             data.getDateTime().toString(),
@@ -288,7 +300,7 @@ public class DashboardController extends BaseController {
         if (showHumidityCheck != null && showHumidityCheck.isSelected()) {
             XYChart.Series<String, Number> humiditySeries =
                     new XYChart.Series<>();
-            humiditySeries.setName("Humidity");
+            humiditySeries.setName("Humidity %");
             dataModel.getWeatherDataList().forEach(data ->
                     humiditySeries.getData().add(new XYChart.Data<>(
                             data.getDateTime().toString(),
