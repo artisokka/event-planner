@@ -2,7 +2,6 @@
 
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
@@ -14,26 +13,31 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.BorderPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
-    <children>
-        <!-- Top Navigation Bar -->
-        <HBox prefHeight="42.0" prefWidth="800.0">
+<BorderPane xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" prefHeight="600" prefWidth="800" style="-fx-background-color: #f0f4f7;">
+    
+    <!-- Top Section -->
+    <top>
+        <AnchorPane prefHeight="42.0" style="-fx-background-color: #3F51B5;">
             <children>
-                <Label text="EVENT PLANNER'S DASHBOARD" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
-                <ToolBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="37.0" prefWidth="500.0">
+                <Label style="-fx-font-size: 20px; -fx-text-fill: white; -fx-font-weight: bold;" 
+                       text="EVENT PLANNER'S DASHBOARD" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0" />
+                <ToolBar style="-fx-background-color: transparent;" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">
                     <items>
-                        <Button fx:id="homeButton" mnemonicParsing="false" text="Home" />
-                        <Button fx:id="historyButton" mnemonicParsing="false" text="History" />
-                        <Button fx:id="savedPreferencesButton" mnemonicParsing="false" text="Saved Preferences" />
-                        <Button fx:id="aboutButton" mnemonicParsing="false" text="About" />
+                        <Button fx:id="homeButton" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" text="Home" />
+                        <Button fx:id="historyButton" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" text="History" />
+                        <Button fx:id="savedPreferencesButton" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" text="Saved Preferences" />
+                        <Button fx:id="aboutButton" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" text="About" />
                     </items>
                 </ToolBar>
             </children>
-        </HBox>
+        </AnchorPane>
+    </top>
 
-        <!-- Left Side Controls -->
-        <VBox layoutX="10.0" layoutY="50.0" prefHeight="500.0" prefWidth="150.0" spacing="10.0">
+    <!-- Left Side Controls -->
+    <left>
+        <VBox prefHeight="600.0" prefWidth="160.0" spacing="15.0" style="-fx-background-color: #3F51B5; -fx-padding: 20px;">
             <children>
                 <TextField fx:id="locationField" promptText="Enter City" />
                 <ComboBox fx:id="regionComboBox" prefWidth="150.0" promptText="Select Region" />
@@ -44,45 +48,49 @@
                 <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSave" text="Save Preferences" />
             </children>
         </VBox>
+    </left>
 
-        <HBox layoutX="180.0" layoutY="50.0" spacing="20.0">
-            <!-- Weather Data Summary Display -->
-            <VBox spacing="10.0" prefHeight="250.0" prefWidth="200.0">
+    <!-- Weather Data Summary and Chart in Center -->
+    <center>
+        <VBox spacing="10.0" prefHeight="600.0" prefWidth="500.0" style="-fx-padding: 25px;">
+            
+            <!-- Weather Summary -->
+            <VBox spacing="10.0" prefHeight="150.0">
                 <children>
                     <Label text="Weather Summary" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
-                    <ListView fx:id="weatherSummaryListView" prefHeight="150.0" prefWidth="180.0" />
+                    <ListView fx:id="weatherSummaryListView" prefHeight="150.0" prefWidth="580.0" />
                 </children>
             </VBox>
 
-            <!-- Air Quality Chart -->
-            <VBox spacing="10.0" prefHeight="250.0" prefWidth="350.0">
+            <!-- Weather Visualization -->
+            <VBox spacing="10.0" prefHeight="300.0">
                 <children>
-                    <Label text="Air Quality Visualization" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
-                    <BarChart fx:id="airQualityChart" prefHeight="200.0" prefWidth="200.0">
+                    <Label text="Weather Visualization" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+                    <LineChart fx:id="weatherChart" prefHeight="250.0" prefWidth="550.0">
                         <xAxis>
-                            <CategoryAxis side="BOTTOM" label="Pollutant" />
+                            <CategoryAxis side="BOTTOM" label="Date" />
                         </xAxis>
                         <yAxis>
-                            <NumberAxis side="LEFT" label="Concentration (µg/m³)" />
+                            <NumberAxis side="LEFT" label="Value" />
                         </yAxis>
-                    </BarChart>
+                    </LineChart>
                 </children>
             </VBox>
-        </HBox>
-
-        <!-- Weather Chart -->
-        <VBox layoutX="180.0" layoutY="280.0" prefHeight="300.0" prefWidth="600.0">
-            <children>
-                <Label text="Weather Visualization" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
-                <LineChart fx:id="weatherChart" prefHeight="250.0" prefWidth="580.0">
-                    <xAxis>
-                        <CategoryAxis side="BOTTOM" label="Date" />
-                    </xAxis>
-                    <yAxis>
-                        <NumberAxis side="LEFT" label="Value" />
-                    </yAxis>
-                </LineChart>
-            </children>
         </VBox>
-    </children>
-</AnchorPane>
+    </center>
+
+    <!-- Air Quality Chart on the Right -->
+    <right>
+        <VBox spacing="10.0" prefHeight="600.0" prefWidth="160.0" style="-fx-padding: 25px;">
+            <Label text="Air Quality Visualization" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+            <LineChart fx:id="airQualityChart" prefHeight="250.0" prefWidth="150.0">
+                <xAxis>
+                    <CategoryAxis side="BOTTOM" label="Pollutant" />
+                </xAxis>
+                <yAxis>
+                    <NumberAxis side="LEFT" label="Concentration (µg/m³)" />
+                </yAxis>
+            </LineChart>
+        </VBox>
+    </right>
+</BorderPane>
