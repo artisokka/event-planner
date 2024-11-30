@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import tuni.fi.weatherDashboard.model.DataModel;
 import tuni.fi.weatherDashboard.model.WeatherData;
 import tuni.fi.weatherDashboard.service.WeatherApiService;
@@ -39,11 +40,14 @@ public class DashboardController extends BaseController {
     @FXML private ListView<String> weatherSummaryListView;
     @FXML private BarChart<String, Number> airQualityChart;
     @FXML private GridPane calendarGrid;
+    @FXML private Button prevMonthButton, nextMonthButton;
 
     private WeatherApiService weatherService;
     private OpenAQService airQualityService;
     private HistoryController historyController;
     private CalendarUtils calendar;
+    private LocalDate currentDate = LocalDate.now();
+    private List<WeatherData> forecastData;
 
     @FXML
     @Override
@@ -54,7 +58,7 @@ public class DashboardController extends BaseController {
         this.calendar = new CalendarUtils();
         this.historyController = ControllerHolder.getHistoryController();
         setupUI();
-        Platform.runLater(() -> populateCalendar(LocalDate.now()));
+        Platform.runLater(() -> populateCalendar(currentDate));
     }
 
     private void setupUI() {
@@ -99,7 +103,7 @@ public class DashboardController extends BaseController {
         try {
             DataModel weatherDataModel = weatherService.fetchWeatherData(
                     location);
-            List<WeatherData> forecastData = weatherDataModel.
+            forecastData = weatherDataModel.
                     getWeatherDataList();
             if (forecastData.isEmpty()) {
                 throw new IllegalStateException("No weather data available");
@@ -156,7 +160,7 @@ public class DashboardController extends BaseController {
             updateWeatherSummaryListView(currentWeather);
             updateAirQualityChart(airQualityData);
             updateChart(weatherDataModel);
-            highlightCalendar(weatherDataModel.getWeatherDataList());
+            highlightCalendar(forecastData);
         });
     }
 
@@ -382,7 +386,23 @@ public class DashboardController extends BaseController {
         }
     }
 
+    @FXML
+    private void handlePreviousMonth() {
+        currentDate = currentDate.minusMonths(1);  // Move to the previous month
+        populateCalendar(currentDate);
+        if (forecastData != null) {
+            highlightCalendar(forecastData);  // Highlight forecast data for the new month
+        }
+    }
 
+    @FXML
+    private void handleNextMonth() {
+        currentDate = currentDate.plusMonths(1);  // Move to the next month
+        populateCalendar(currentDate);
+        if (forecastData != null) {
+            highlightCalendar(forecastData);  // Highlight forecast data for the new month
+        }
+    }
 
     public void highlightCalendar(List<WeatherData> forecastData) {
         Map<LocalDate, String> highlightMap = new HashMap<>();
@@ -393,11 +413,26 @@ public class DashboardController extends BaseController {
                 .max(Comparator.comparingDouble(WeatherData::getTemperature)) // Max temperature
                 .orElse(null);
 
-        // Find the coldest day(s) with rain
-        WeatherData worstDay = forecastData.stream()
-                .filter(data -> data.getPrecipitation() >= 1) // Rain present
-                .min(Comparator.comparingDouble(WeatherData::getTemperature)) // Min temperature
-                .orElse(null);
+        // Find the coldest day(s) or days with rain
+        WeatherData worstDay;
+
+        List<WeatherData> rainyDays = forecastData.stream()
+                .filter(data -> data.getPrecipitation() >= 1) // Days with rain
+                .collect(Collectors.toList());
+
+        if (!rainyDays.isEmpty()) {
+            // If there are rainy days, find the one with the most precipitation
+            worstDay = rainyDays.stream()
+                    .max(Comparator.comparingDouble(
+                            WeatherData::getPrecipitation)) // Max precipitation
+                    .orElse(null);
+        } else {
+            // If no rainy days, find the coldest day
+            worstDay = forecastData.stream()
+                    .min(Comparator.comparingDouble(WeatherData::getTemperature)) // Min temperature
+                    .
+                    orElse(null);
+        }
 
         // Apply highlights to the calendar
         for (WeatherData data : forecastData) {
@@ -420,6 +455,7 @@ public class DashboardController extends BaseController {
         System.out.println("Tried to call updateCalendarUI");
     }
 
+
     public void updateCalendarUI(Map<LocalDate, String> highlightMap) {
         if (calendarGrid != null) {
             System.out.println("CalendarGrid isn't null");
@@ -431,27 +467,26 @@ public class DashboardController extends BaseController {
                         System.out.println("String text: \"" + text + "\"");
                         LocalDate cellDate = getDateFromCell(dayLabel);
 
-                        // Remove previous dots (if any)
+                        // Remove previous dots
                         stackPane.getChildren().removeIf(child ->
                                 child instanceof Circle);
 
                         if (cellDate != null && highlightMap.containsKey(
                                 cellDate)) {
                             String styleClass = highlightMap.get(cellDate);
-
-                            // Add the style class to the label (optional)
                             dayLabel.getStyleClass().add(styleClass);
 
                             // Add a colored dot based on the weather type
-                            Circle dot = new Circle(10);
+                            Circle dot = new Circle(15);
                             dot.setTranslateX(0);
                             dot.setTranslateY(0);
+                            dot.setTranslateZ(0);
                             dot.setStyle("-fx-alignment: center;");
+                            dot.setOpacity(0.5);
 
                             switch (styleClass) {
                                 case "best-weather":
-                                    dot.setFill(Color.GREEN);
-                                    // Green dot for best weather
+                                    dot.setFill(Color.GREEN); // Green dot for best weather
                                     break;
                                 case "worst-weather":
                                     dot.setFill(Color.RED);  // Red dot for worst weather

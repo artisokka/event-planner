@@ -99,7 +99,18 @@
 
             <!-- Weather Calendar Section -->
             <VBox spacing="10.0" prefHeight="300.0">
-                <Label text="Weather Calendar" style="-fx-font-size: 14px; -fx-font-weight: bolfd;" />
+                <Label text="Weather Calendar" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+
+                <!-- HBox to arrange the buttons -->
+                <HBox spacing="10.0" alignment="CENTER">
+                    <!-- Left-aligned button -->
+                    <Button fx:id="prevMonthButton" text="Previous" onAction="#handlePreviousMonth"/>
+
+                    <!-- Right-aligned button -->
+                    <Button fx:id="nextMonthButton" text="Next" onAction="#handleNextMonth"/>
+                </HBox>
+
+                <!-- Calendar Grid -->
                 <GridPane fx:id="calendarGrid" hgap="5" vgap="5" style="-fx-padding: 10; -fx-background-color: #e8eaf6; -fx-border-color: #3F51B5; -fx-border-width: 2;">
                     <!-- Calendar days will be added dynamically -->
                 </GridPane>
