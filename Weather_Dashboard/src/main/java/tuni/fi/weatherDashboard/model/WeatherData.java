@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 
 public class WeatherData {
+
     private LocalDateTime dateTime;
     private double temperature;
     private double humidity;
@@ -12,10 +13,11 @@ public class WeatherData {
     private String location;
     private String description;
 
-    public WeatherData(String dateTime, double temperature, double humidity, 
-                      double precipitation) {
+    public WeatherData(String location, String dateTime, double temperature,
+            double humidity,                      double precipitation) {
+        this.location = location;
         this.dateTime = LocalDateTime.ofInstant(
-            Instant.ofEpochSecond(Long.parseLong(dateTime)), 
+                Instant.ofEpochSecond(Long.parseLong(dateTime)),
             ZoneId.systemDefault()
         );
         this.temperature = temperature;
