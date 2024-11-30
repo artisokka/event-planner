@@ -73,8 +73,9 @@ public class HistoryController extends BaseController {
     public void addSearchToHistory(WeatherData weatherData) {
         if (weatherData != null) {
             if (historyTable != null) {
-                searchHistory.add(weatherData);
-                historyTable.refresh();
+                // Insert the new entry at the beginning of the list (index 0)
+                searchHistory.add(0, weatherData);
+                historyTable.refresh(); // Refresh to reflect the updated order
                 System.out.println("Added search to history table.");
             } else {
                 cachedHistory.add(weatherData); // Cache until the table is initialized
@@ -84,6 +85,8 @@ public class HistoryController extends BaseController {
         }
     }
 
+
+    // Some events for show, no functionality whatsoever
     private void setupEventsList() {
         eventsList.getItems().addAll(
                 "Rosa's Birthday",

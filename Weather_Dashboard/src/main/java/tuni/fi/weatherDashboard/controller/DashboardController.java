@@ -510,7 +510,7 @@ public class DashboardController extends BaseController {
                 }
             }
         } else {
-            System.out.println("CalendarGrid is null!!! sos");
+            System.out.println("CalendarGrid is null");
         }
     }
 
