@@ -10,9 +10,11 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.application.Platform;
 import javafx.scene.chart.BarChart;
+import javafx.scene.text.Text;
 import tuni.fi.weatherDashboard.model.AirQualityData;
 import tuni.fi.weatherDashboard.service.OpenAQService;
 import tuni.fi.weatherDashboard.utils.AlertUtils;
+import tuni.fi.weatherDashboard.utils.DateTimeUtils;
 import tuni.fi.weatherDashboard.utils.StringUtils;
 
 public class DashboardController extends BaseController {
@@ -210,9 +212,8 @@ public class DashboardController extends BaseController {
                 updateWeatherSummaryListView(currentWeather);
 
                 // Update air quality summary
-                if (airQualityData != null) {
-                    updateAirQualityChart(airQualityData);
-                }
+                updateAirQualityChart(airQualityData);
+
 
                 // Update weather chart
                 updateChart(dataModel);
@@ -256,18 +257,51 @@ public class DashboardController extends BaseController {
         // Clear existing data
         airQualityChart.getData().clear();
 
+        // If airQualityData is null, show a "No data available" message
+        if (airQualityData == null) {
+            XYChart.Series<String, Number> noDataSeries = new XYChart.Series<>();
+            noDataSeries.setName("Air Quality");
+
+            // Create a single data point with "No data available"
+            XYChart.Data<String, Number> noDataPoint = new XYChart.Data<>(
+                    "No Data", 0);
+
+            Text label = new Text("No data available");
+            label.setStyle(
+                    "-fx-font-size: 14px; -fx-font-weight: bold; -fx-fill: red;");
+            label.setTranslateX(65);
+            label.setTranslateY(-65);
+
+            // Set the label to the node of the data point
+            noDataPoint.setNode(label);
+            noDataSeries.getData().add(noDataPoint);
+            airQualityChart.getData().add(noDataSeries);
+
+            return;
+        }
+
         if (airQualityData != null) {
             // Create a new series for the BarChart
             XYChart.Series<String, Number> series = new XYChart.Series<>();
             series.setName("Air Quality");
 
-            // Add data to the series, corresponding to the pollutants
-            series.getData().add(new XYChart.Data<>("PM2.5", airQualityData.
-                    getPm25()));
-            series.getData().add(new XYChart.Data<>("PM10", airQualityData.
-                    getPm10()));
-            series.getData().add(new XYChart.Data<>("NO2", airQualityData.
-                    getNo2()));
+            // Add data to the series
+            if (airQualityData.getPm25() != 0.0) {
+                series.getData().add(new XYChart.Data<>("PM2.5", airQualityData.
+                        getPm25()));
+            }
+            if (airQualityData.getPm10() != 0.0) {
+                series.getData().add(new XYChart.Data<>("PM10", airQualityData.
+                        getPm10()));
+            }
+            if (airQualityData.getNo2() != 0.0) {
+                series.getData().add(new XYChart.Data<>("NO2", airQualityData.
+                        getNo2()));
+            }
+
+            System.out.println("PM2.5: " + airQualityData.getPm25());
+            System.out.println("PM10: " + airQualityData.getPm10());
+            System.out.println("NO2: " + airQualityData.getNo2());
 
             // Add the series to the BarChart
             airQualityChart.getData().add(series);
@@ -288,12 +322,30 @@ public class DashboardController extends BaseController {
             XYChart.Series<String, Number> tempSeries = new XYChart.Series<>();
             tempSeries.setName("Temperature °C");
 
-            dataModel.getWeatherDataList().forEach(data ->
-                    tempSeries.getData().add(new XYChart.Data<>(
-                            data.getDateTime().toString(),
-                            data.getTemperature()
-                    ))
-            );
+            // Loop through the weather data
+            dataModel.getWeatherDataList().forEach(data -> {
+                String formattedDate = DateTimeUtils.formatDateTime(data.
+                        getDateTime());
+
+                // Create a data point for the chart
+                XYChart.Data<String, Number> dataPoint = new XYChart.Data<>(
+                        formattedDate, data.getTemperature());
+
+                // Create a label to display next to the data point
+                Text label = new Text(String.format("%d°C", (int) data.
+                        getTemperature()));
+                label.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;");
+                label.setTranslateX(10);
+                label.setTranslateY(-15);
+
+                // Set the label as the node for the data point
+                dataPoint.setNode(label);
+
+                // Add the data point to the series
+                tempSeries.getData().add(dataPoint);
+            });
+
+            // Add the series to the chart
             weatherChart.getData().add(tempSeries);
         }
 
@@ -301,12 +353,26 @@ public class DashboardController extends BaseController {
             XYChart.Series<String, Number> humiditySeries =
                     new XYChart.Series<>();
             humiditySeries.setName("Humidity %");
-            dataModel.getWeatherDataList().forEach(data ->
-                    humiditySeries.getData().add(new XYChart.Data<>(
-                            data.getDateTime().toString(),
-                            data.getHumidity()
-                    ))
-            );
+            dataModel.getWeatherDataList().forEach(data -> {
+                String formattedDate = DateTimeUtils.formatDateTime(data.
+                        getDateTime());
+
+                XYChart.Data<String, Number> dataPoint = new XYChart.Data<>(
+                        formattedDate, data.getHumidity());
+
+                // Create a label to display next to the data point
+                Text label = new Text(String.format("%d%%", (int) data.
+                        getHumidity()));
+                label.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;");
+                label.setTranslateX(10);
+                label.setTranslateY(15);
+
+                // Set the label as the node for the data point
+                dataPoint.setNode(label);
+
+                // Add the data point to the series
+                humiditySeries.getData().add(dataPoint);
+            });
             weatherChart.getData().add(humiditySeries);
         }
     }

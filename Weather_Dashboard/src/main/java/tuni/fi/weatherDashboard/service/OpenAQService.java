@@ -85,44 +85,41 @@ public class OpenAQService {
             JSONObject jsonObject = new JSONObject(jsonResponse);
             JSONArray results = jsonObject.getJSONArray("results");
 
-            if (results.isEmpty()) {
-                throw new RuntimeException(
-                        "No air quality data available for the location");
-            }
+            if (!results.isEmpty()) {
+                JSONObject firstResult = results.getJSONObject(0);
+                String city = firstResult.getString("city");
+                JSONArray parameters = firstResult.getJSONArray("parameters");
 
-            JSONObject firstResult = results.getJSONObject(0);
-            String city = firstResult.getString("city");
-            JSONArray parameters = firstResult.getJSONArray("parameters");
+                double pm25 = 0.0;
+                double pm10 = 0.0;
+                double no2 = 0.0;
 
-            double pm25 = 0.0;
-            double pm10 = 0.0;
-            double no2 = 0.0;
+                for (int i = 0; i < parameters.length(); i++) {
+                    JSONObject parameter = parameters.getJSONObject(i);
+                    String param = parameter.getString("parameter");
+                    double value = parameter.getDouble("lastValue");
 
-            for (int i = 0; i < parameters.length(); i++) {
-                JSONObject parameter = parameters.getJSONObject(i);
-                String param = parameter.getString("parameter");
-                double value = parameter.getDouble("lastValue");
-
-                // Dynamically handle each measurement param
-                switch (param) {
-                    case "pm25":
-                        pm25 = value;
-                        break;
-                    case "pm10":
-                        pm10 = value;
-                        break;
-                    case "no2":
-                        no2 = value;
-                        break;
-                    default:
-                        // For debug
-                        System.out.println("Unknown parameter: " + parameter +
-                                " with value: " + value);
+                    // Dynamically handle each measurement param
+                    switch (param) {
+                        case "pm25":
+                            pm25 = value;
+                            break;
+                        case "pm10":
+                            pm10 = value;
+                            break;
+                        case "no2":
+                            no2 = value;
+                            break;
+                        default:
+                            // For debug
+                            System.out.println(
+                                    "Unknown parameter: " + parameter +
+                                    " with value: " + value);
+                    }
                 }
+                // Return the data wrapped in the AirQualityData model
+                return new AirQualityData(city, pm25, pm10, no2);
             }
-
-            // Return the data wrapped in the AirQualityData model
-            return new AirQualityData(city, pm25, pm10, no2);
 
         } catch (Exception e) {
             System.err.println("Error parsing air quality data: " + e.
@@ -131,5 +128,6 @@ public class OpenAQService {
                     e.getMessage());
             return null;
         }
+        return null;
     }
 }
