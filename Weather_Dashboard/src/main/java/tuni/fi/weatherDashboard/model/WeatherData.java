@@ -31,7 +31,17 @@ public class WeatherData {
     public double getHumidity() { return humidity; }
     public double getPrecipitation() { return precipitation; }
     public String getLocation() { return location; }
-    public String getDescription() { return description; }
+    public String getDescription() {
+        return description;
+    }
+
+    public LocalDateTime getLocalDate() {
+        return this.dateTime;
+    }
+
+    public boolean isRain(String description) {
+        return description.toLowerCase().contains("rain");
+    }
 
     // Setters
     public void setLocation(String location) { this.location = location; }

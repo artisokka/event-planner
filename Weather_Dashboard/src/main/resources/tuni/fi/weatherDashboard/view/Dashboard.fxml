@@ -15,6 +15,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
 
 <BorderPane xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" prefHeight="600" prefWidth="800" style="-fx-background-color: #f0f4f7;">
 
@@ -82,16 +83,28 @@
 
     <!-- Air Quality Chart on the Right -->
     <right>
-        <VBox spacing="10.0" prefHeight="600.0" prefWidth="160.0" style="-fx-padding: 25px;">
-            <Label text="Air Quality Visualization" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
-            <BarChart fx:id="airQualityChart" prefHeight="250.0" prefWidth="150.0">
-                <xAxis>
-                    <CategoryAxis side="BOTTOM" label="Pollutant" />
-                </xAxis>
-                <yAxis>
-                    <NumberAxis side="LEFT" label="Concentration (µg/m³)" />
-                </yAxis>
-            </BarChart>
+            <VBox spacing="10.0" prefHeight="600.0" prefWidth="160.0" style="-fx-padding: 25px;">
+            <!-- Air Quality Visualization Section -->
+            <VBox spacing="10.0" prefHeight="300.0">
+                <Label text="Air Quality Visualization" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+                <BarChart fx:id="airQualityChart" prefHeight="250.0" prefWidth="150.0">
+                    <xAxis>
+                        <CategoryAxis side="BOTTOM" label="Pollutant" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis side="LEFT" label="Concentration (µg/m³)" />
+                    </yAxis>
+                </BarChart>
+            </VBox>
+
+            <!-- Weather Calendar Section -->
+            <VBox spacing="10.0" prefHeight="300.0">
+                <Label text="Weather Calendar" style="-fx-font-size: 14px; -fx-font-weight: bolfd;" />
+                <GridPane fx:id="calendarGrid" hgap="5" vgap="5" style="-fx-padding: 10; -fx-background-color: #e8eaf6; -fx-border-color: #3F51B5; -fx-border-width: 2;">
+                    <!-- Calendar days will be added dynamically -->
+                </GridPane>
+            </VBox>
         </VBox>
     </right>
+
 </BorderPane>
