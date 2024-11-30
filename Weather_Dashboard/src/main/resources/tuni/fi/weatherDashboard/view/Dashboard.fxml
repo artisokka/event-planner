@@ -66,5 +66,20 @@
                 </LineChart>
             </children>
         </VBox>
+
+        <!-- Air Quality Chart -->
+        <VBox layoutX="10.0" layoutY="300.0" prefHeight="250.0" prefWidth="150.0">
+            <children>
+                <Label text="Air Quality Visualization" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+                <LineChart fx:id="airQualityChart" prefHeight="250.0" prefWidth="580.0">
+                    <xAxis>
+                        <CategoryAxis side="BOTTOM" label="Pollutant" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis side="LEFT" label="Concentration (µg/m³)" />
+                    </yAxis>
+                </LineChart>
+            </children>
+        </VBox>
     </children>
 </AnchorPane>

@@ -9,6 +9,8 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.application.Platform;
+import tuni.fi.weatherDashboard.model.AirQualityData;
+import tuni.fi.weatherDashboard.service.OpenAQService;
 import tuni.fi.weatherDashboard.utils.AlertUtils;
 
 public class DashboardController extends BaseController {
@@ -25,8 +27,10 @@ public class DashboardController extends BaseController {
     @FXML private Label humidityLabel;
     @FXML private Label descriptionLabel;
     @FXML private ListView weatherSummaryListView;
+    @FXML private LineChart<String, Number> airQualityChart;
 
     private WeatherApiService weatherService;
+    private OpenAQService airQualityService;
     private HistoryController historyController;
 
     @FXML
@@ -34,6 +38,7 @@ public class DashboardController extends BaseController {
     protected void initialize() {
         super.initialize();
         weatherService = new WeatherApiService();
+        airQualityService = new OpenAQService();
 
         setupInitialState();
 
@@ -113,6 +118,7 @@ public class DashboardController extends BaseController {
         }
 
         try {
+            // Fetch weather data
             System.out.println("Fetching weather data...");
             DataModel weatherDataModel = weatherService.fetchWeatherData(
                     location.trim());
@@ -125,21 +131,25 @@ public class DashboardController extends BaseController {
                 return;
             }
 
-            // Current weather summary: first item
-            WeatherData currentWeather = forecastData.get(0);
+            // Fetch air quality data
+            System.out.println("Fetching air quality data...");
+            airQualityService.fetchAirQualityData(location);
+            //AirQualityData airQualityData = airQualityService.fetchAirQualityData(location.trim());
 
-            // Add to history
+            // Save to history
+            WeatherData currentWeather = forecastData.get(0);
             saveSearchToHistory(currentWeather);
 
             // Update UI
-            updateUI(weatherDataModel);
+            //updateUI(weatherDataModel, airQualityData);
 
         } catch (Exception e) {
-            System.err.println("Error fetching weather data: " + e.getMessage());
-            AlertUtils.showAlert("Error", "Failed to fetch weather data: " + e.
+            System.err.println("Error fetching data: " + e.getMessage());
+            AlertUtils.showAlert("Error", "Failed to fetch data: " + e.
                     getMessage());
         }
     }
+
 
     @FXML
     private void handleSave() {
@@ -162,7 +172,7 @@ public class DashboardController extends BaseController {
         preferencesController.addLocation(location);
     }
 
-    private void updateUI(DataModel dataModel) {
+    private void updateUI(DataModel dataModel, AirQualityData airQualityData) {
         if (dataModel == null || dataModel.getWeatherDataList().isEmpty()) {
             System.out.println("No weather data available");
             return;
@@ -173,11 +183,11 @@ public class DashboardController extends BaseController {
                 WeatherData currentWeather = dataModel.getWeatherDataList().get(
                         0);
 
-                // Update labels with null checks
+                // Update weather labels
                 if (temperatureLabel != null) {
                     temperatureLabel.setText(String.
-                            format("Temperature: %.1f°C",
-                                    currentWeather.getTemperature()));
+                            format("Temperature: %.1f°C", currentWeather.
+                                    getTemperature()));
                 }
                 if (humidityLabel != null) {
                     humidityLabel.setText(String.format("Humidity: %.1f%%",
@@ -188,10 +198,16 @@ public class DashboardController extends BaseController {
                     descriptionLabel.setText("Conditions: " + currentWeather.
                             getDescription());
                 }
+
                 // Update weather summary ListView for current weather
                 updateWeatherSummaryListView(currentWeather);
 
-                // Update chart
+                // Update air quality summary
+                //if (airQualityData != null) {
+                //    updateAirQualityChart(airQualityData);
+                //}
+
+                // Update weather chart
                 updateChart(dataModel);
 
                 System.out.println("UI updated successfully");
@@ -223,6 +239,30 @@ public class DashboardController extends BaseController {
                     currentWeather.getDescription());
         }
     }
+
+    private void updateAirQualityChart(AirQualityData airQualityData) {
+        if (airQualityChart == null) {
+            System.err.println("Air Quality Chart is null!");
+            return;
+        }
+
+        airQualityChart.getData().clear();
+
+        if (airQualityData != null) {
+            XYChart.Series<String, Number> series = new XYChart.Series<>();
+            series.setName("Air Quality");
+
+            series.getData().add(new XYChart.Data<>("PM2.5", airQualityData.
+                    getPm25()));
+            series.getData().add(new XYChart.Data<>("PM10", airQualityData.
+                    getPm10()));
+            series.getData().add(new XYChart.Data<>("NO2", airQualityData.
+                    getNo2()));
+
+            airQualityChart.getData().add(series);
+        }
+    }
+
 
     private void updateChart(DataModel dataModel) {
         if (weatherChart == null) {
