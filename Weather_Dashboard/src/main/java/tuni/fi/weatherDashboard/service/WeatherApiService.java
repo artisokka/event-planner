@@ -9,6 +9,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class WeatherApiService {
             throw new IllegalArgumentException("Please enter a city name");
         }
 
-        List<WeatherData> weatherDataList = new ArrayList<>();
+        ArrayList<WeatherData> weatherDataList = new ArrayList<>();
         try {
             // Clean and encode the city name
             String encodedCity = URLEncoder.encode(cityName.trim(),
@@ -49,18 +50,21 @@ public class WeatherApiService {
             e.printStackTrace();
         }
 
+        weatherDataList.sort(Comparator.comparing(data ->
+                data.getDateTime()));
+
         return new DataModel(weatherDataList);
     }
 
-    private List<WeatherData> parse5DayForecast(String location,
+    private ArrayList<WeatherData> parse5DayForecast(String location,
             String jsonResponse) {
-        List<WeatherData> weatherDataList = new ArrayList<>();
+        ArrayList<WeatherData> weatherDataList = new ArrayList<>();
         try {
             JSONObject jsonObject = new JSONObject(jsonResponse);
             JSONArray listArray = jsonObject.getJSONArray("list");
 
             // Aggregation logic for daily data
-            Map<String, List<WeatherData>> dailyDataMap = new HashMap<>();
+            Map<String, ArrayList<WeatherData>> dailyDataMap = new HashMap<>();
 
             for (int i = 0; i < listArray.length(); i++) {
                 JSONObject forecast = listArray.getJSONObject(i);
@@ -104,7 +108,7 @@ public class WeatherApiService {
             }
 
             // Summarize daily data
-            for (Map.Entry<String, List<WeatherData>> entry : dailyDataMap.
+            for (Map.Entry<String, ArrayList<WeatherData>> entry : dailyDataMap.
                     entrySet()) {
                 String date = entry.getKey();
                 List<WeatherData> dailyData = entry.getValue();

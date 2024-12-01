@@ -4,6 +4,7 @@ import tuni.fi.weatherDashboard.calendar.CalendarUtils;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -23,15 +24,16 @@ import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import tuni.fi.weatherDashboard.model.AirQualityData;
 import tuni.fi.weatherDashboard.service.OpenAQService;
 import tuni.fi.weatherDashboard.utils.AlertUtils;
-import tuni.fi.weatherDashboard.utils.DateTimeUtils;
 import tuni.fi.weatherDashboard.utils.LineChartUtils;
 import tuni.fi.weatherDashboard.utils.StringUtils;
+import tuni.fi.weatherDashboard.utils.WeatherCardUtils;
 
 public class DashboardController extends BaseController {
 
@@ -41,11 +43,10 @@ public class DashboardController extends BaseController {
     @FXML private Button searchButton, saveButton;
     @FXML private LineChart<String, Number> weatherChart;
     @FXML private Label temperatureLabel, humidityLabel, descriptionLabel;
-    @FXML private ListView<String> weatherSummaryListView;
+    @FXML private GridPane weatherSummary;
     @FXML private BarChart<String, Number> airQualityChart;
     @FXML private GridPane calendarGrid;
     @FXML private Button prevMonthButton, nextMonthButton;
-    @FXML private Label headerLabel;
     @FXML private Label monthName;
 
     private WeatherApiService weatherService;
@@ -53,7 +54,7 @@ public class DashboardController extends BaseController {
     private HistoryController historyController;
     private CalendarUtils calendar;
     private LocalDate currentDate = LocalDate.now();
-    private List<WeatherData> forecastData;
+    private ArrayList<WeatherData> forecastData;
 
     @FXML
     @Override
@@ -109,6 +110,7 @@ public class DashboardController extends BaseController {
         try {
             DataModel weatherDataModel = weatherService.fetchWeatherData(
                     location);
+
             forecastData = weatherDataModel.
                     getWeatherDataList();
             if (forecastData.isEmpty()) {
@@ -128,7 +130,7 @@ public class DashboardController extends BaseController {
             AirQualityData airQualityData = airQualityService.
                     fetchAirQualityData(location);
 
-            saveSearchToHistory(forecastData.get(forecastData.size() - 1));
+            saveSearchToHistory(forecastData.get(0));
             updateUI(weatherDataModel, airQualityData);
         } catch (Exception e) {
             AlertUtils.showAlert("Error", "Failed to fetch data: " + e.
@@ -183,44 +185,23 @@ public class DashboardController extends BaseController {
             }
 
 
-            updateWeatherSummaryListView(currentWeather);
+            //updateWeatherSummaryListView(currentWeather);
+            displayWeatherCards(currentWeather);
+
             updateAirQualityChart(airQualityData);
             updateChart(weatherDataModel);
             highlightCalendar(forecastData);
         });
     }
 
-    private void updateWeatherSummaryListView(WeatherData currentWeather) {
-        if (weatherSummaryListView == null) {
-            return;
-        }
+    private void displayWeatherCards(WeatherData currentWeather) {
+        weatherSummary.getChildren().clear(); // Clear existing content
 
-        // Clear previous data in the list view
-        weatherSummaryListView.getItems().clear();
+        int row = 0;
+        int col = 0;
 
-        headerLabel.setText(StringUtils.capitalizeFirstLetter(
-                locationField.getText()));
-
-        // Add current weather summary to the list view
-        weatherSummaryListView.getItems().add(String.format(
-                "Temperature: %.1f°C",
-                currentWeather.
-                        getTemperature()));
-        weatherSummaryListView.getItems().add(String.format(
-                "Feels like: %.1f°C",
-                currentWeather.
-                        getFeelsLike()));
-        weatherSummaryListView.getItems().add(String.format("Humidity: %.1f%%",
-                currentWeather.
-                        getHumidity()));
-        weatherSummaryListView.getItems().add(String.format(
-                "Precipitation: %.1fmm",
-                currentWeather.
-                        getPrecipitation()));
-        if (currentWeather.getDescription() != null) {
-            weatherSummaryListView.getItems().add("Conditions: " +
-                    currentWeather.getDescription());
-        }
+        VBox weatherCard = WeatherCardUtils.createWeatherCard(currentWeather);
+        weatherSummary.add(weatherCard, col, col);
     }
 
     private void updateAirQualityChart(AirQualityData airQualityData) {

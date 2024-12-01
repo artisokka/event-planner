@@ -1,15 +1,15 @@
 package tuni.fi.weatherDashboard.model;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class DataModel {
-    private List<WeatherData> weatherDataList;
+    private ArrayList<WeatherData> weatherDataList;
 
-    public DataModel(List<WeatherData> weatherDataList) {
+    public DataModel(ArrayList<WeatherData> weatherDataList) {
         this.weatherDataList = weatherDataList;
     }
 
-    public List<WeatherData> getWeatherDataList() {
+    public ArrayList<WeatherData> getWeatherDataList() {
         return weatherDataList;
     }
 
