@@ -109,9 +109,11 @@ public class WeatherApiService {
                 String date = entry.getKey();
                 List<WeatherData> dailyData = entry.getValue();
 
-                // Calculate daily averages
-                double avgTemp = dailyData.stream().mapToDouble(
-                        WeatherData::getTemperature).average().orElse(0.0);
+                // Calculate daily averages and get maxTemp and minTemp
+                double maxTemp = dailyData.stream().mapToDouble(
+                        WeatherData::getTemperature).max().orElse(0.0);
+                double minTemp = dailyData.stream().mapToDouble(
+                        WeatherData::getTemperature).min().orElse(0.0);
                 double avgHumidity = dailyData.stream().mapToDouble(
                         WeatherData::getHumidity).average().orElse(0.0);
                 double totalPrecipitation = dailyData.stream().mapToDouble(
@@ -125,10 +127,11 @@ public class WeatherApiService {
                 WeatherData dailySummary = new WeatherData(location,
                         String.valueOf(dailyData.get(0).getDateTime().
                                 toEpochSecond(java.time.ZoneOffset.UTC)),
-                        avgTemp,
+                        maxTemp,
                         avgHumidity,
                         totalPrecipitation,
-                        avgFeelsLike
+                        avgFeelsLike,
+                        minTemp
                 );
                 dailySummary.setDescription(description);
 

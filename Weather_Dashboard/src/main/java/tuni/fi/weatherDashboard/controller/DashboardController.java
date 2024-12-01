@@ -261,8 +261,6 @@ public class DashboardController extends BaseController {
         }
     }
 
-
-
     private void updateChart(DataModel dataModel) {
         if (weatherChart == null) {
             System.err.println("Weather chart is null!");
@@ -272,91 +270,92 @@ public class DashboardController extends BaseController {
         weatherChart.getData().clear();
 
         if (showTemperatureCheck != null && showTemperatureCheck.isSelected()) {
-            XYChart.Series<String, Number> tempSeries = new XYChart.Series<>();
-            tempSeries.setName("Temperature °C");
+            XYChart.Series<String, Number> maxTempSeries =
+                    new XYChart.Series<>();
 
-            // Loop through the weather data
-            dataModel.getWeatherDataList().forEach(data -> {
-                String formattedDate = DateTimeUtils.formatDateTime(data.
-                        getDateTime());
+            XYChart.Series<String, Number> minTempSeries =
+                    new XYChart.Series<>();
 
-                // Create a data point for the chart
-                XYChart.Data<String, Number> dataPoint = new XYChart.Data<>(
-                        formattedDate, data.getTemperature());
+            maxTempSeries = addPoints(dataModel, "max");
 
-                // Create a label to display next to the data point
-                Text label = new Text(String.format("%d°C", (int) data.
-                        getTemperature()));
-                label.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;");
-                label.setTranslateX(10);
-                label.setTranslateY(-15);
-
-                // Set the label as the node for the data point
-                dataPoint.setNode(label);
-
-                // Add the data point to the series
-                tempSeries.getData().add(dataPoint);
-            });
+            minTempSeries = addPoints(dataModel, "min");
 
             // Add the series to the chart
-            weatherChart.getData().add(tempSeries);
+            weatherChart.getData().add(maxTempSeries);
+            weatherChart.getData().add(minTempSeries);
+
         }
 
         if (showHumidityCheck != null && showHumidityCheck.isSelected()) {
             XYChart.Series<String, Number> humiditySeries =
                     new XYChart.Series<>();
-            humiditySeries.setName("Humidity %");
-            dataModel.getWeatherDataList().forEach(data -> {
-                String formattedDate = DateTimeUtils.formatDateTime(data.
-                        getDateTime());
+            humiditySeries = addPoints(dataModel, "hum");
 
-                XYChart.Data<String, Number> dataPoint = new XYChart.Data<>(
-                        formattedDate, data.getHumidity());
-
-                // Create a label to display next to the data point
-                Text label = new Text(String.format("%d%%", (int) data.
-                        getHumidity()));
-                label.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;");
-                label.setTranslateX(10);
-                label.setTranslateY(15);
-
-                System.out.println("Humidity: " + dataPoint);
-
-                // Set the label as the node for the data point
-                dataPoint.setNode(label);
-
-                // Add the data point to the series
-                humiditySeries.getData().add(dataPoint);
-            });
             weatherChart.getData().add(humiditySeries);
         }
+    }
 
-        XYChart.Series<String, Number> precipSeries =
+    public XYChart.Series<String, Number> addPoints(DataModel dataModel,
+            String param) {
+
+        XYChart.Series<String, Number> series =
                 new XYChart.Series<>();
-        precipSeries.setName("Precipitation mm");
+
+        // Loop through the weather data
         dataModel.getWeatherDataList().forEach(data -> {
             String formattedDate = DateTimeUtils.formatDateTime(data.
                     getDateTime());
 
-            XYChart.Data<String, Number> dataPoint = new XYChart.Data<>(
-                    formattedDate, data.getHumidity());
+            XYChart.Data<String, Number> dataPoint = new XYChart.Data<>();
+            Text label = new Text();
 
-            // Create a label to display next to the data point
-            Text label = new Text(String.format("%d%%", (int) data.
-                    getPrecipitation()));
+            if (param.equals("max")) {
+                series.setName("Max Temperature °C");
+                // Create a data point for the chart
+                dataPoint = new XYChart.Data<>(
+                        formattedDate, data.getTemperature());
+                // Create a label to display next to the data point
+                label = new Text(String.format("%d°C", (int) data.
+                        getTemperature()));
+                label.setTranslateX(10);
+                label.setTranslateY(-15);
+            }
+
+            if (param.equals("min")) {
+                series.setName("Min Temperature °C");
+                // Create a data point for the chart
+                dataPoint = new XYChart.Data<>(
+                        formattedDate, data.getMinTemp());
+                // Create a label to display next to the data point
+                label = new Text(String.format("%d°C", (int) data.
+                        getMinTemp()));
+                label.setTranslateX(10);
+                label.setTranslateY(15);
+            }
+
+            if (param.equals("hum")) {
+                series.setName("Humidity %%");
+                // Create a data point for the chart
+                dataPoint = new XYChart.Data<>(
+                        formattedDate, data.getHumidity());
+                // Create a label to display next to the data point
+                label = new Text(String.format("%d%%", (int) data.
+                        getHumidity()));
+                label.setTranslateX(10);
+                label.setTranslateY(15);
+            }
+
             label.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;");
-            label.setTranslateX(10);
-            label.setTranslateY(15);
 
-            System.out.println("Precipitation: " + dataPoint);
 
             // Set the label as the node for the data point
             dataPoint.setNode(label);
 
             // Add the data point to the series
-            precipSeries.getData().add(dataPoint);
+            series.getData().add(dataPoint);
         });
-        weatherChart.getData().add(precipSeries);
+
+        return series;
     }
 
     /*

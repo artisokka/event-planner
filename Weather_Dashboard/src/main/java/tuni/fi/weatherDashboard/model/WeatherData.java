@@ -13,9 +13,11 @@ public class WeatherData {
     private String location;
     private String description;
     private double feelsLike;
+    private Double minTemp;
 
     public WeatherData(String location, String dateTime, double temperature,
-            double humidity, double precipitation, double feelsLike) {
+            double humidity, double precipitation, double feelsLike,
+            Double minTemp) {
         this.location = location;
         this.dateTime = LocalDateTime.ofInstant(
                 Instant.ofEpochSecond(Long.parseLong(dateTime)),
@@ -25,11 +27,24 @@ public class WeatherData {
         this.humidity = humidity;
         this.precipitation = precipitation;
         this.feelsLike = feelsLike;
+        this.minTemp = minTemp;
+    }
+
+    public WeatherData(String location, String dateTime, double temperature,
+            double humidity, double precipitation, double feelsLike) {
+        this(location, dateTime, temperature, humidity, precipitation, feelsLike,
+                null);
     }
 
     // Getters
     public LocalDateTime getDateTime() { return dateTime; }
-    public double getTemperature() { return temperature; }
+    public double getTemperature() {
+        return temperature;
+    }
+
+    public double getMinTemp() {
+        return minTemp;
+    }
     public double getHumidity() { return humidity; }
     public double getPrecipitation() {
         return precipitation;
