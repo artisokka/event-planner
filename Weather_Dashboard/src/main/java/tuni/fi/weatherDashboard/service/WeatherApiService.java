@@ -37,7 +37,7 @@ public class WeatherApiService {
                     cityName);
             String jsonResponse = sendGetRequest(apiUrl);
 
-            //System.out.println("Raw API Response: " + jsonResponse);
+            System.out.println("Raw API Response: " + jsonResponse);
 
             weatherDataList = parse5DayForecast(cityName, jsonResponse);
 
@@ -69,8 +69,9 @@ public class WeatherApiService {
                 JSONObject main = forecast.getJSONObject("main");
                 double temperature = main.getDouble("temp");
                 double humidity = main.getDouble("humidity");
-
                 double precipitation = 0.0;
+                double feelsLike = main.getDouble("feels_like");
+
                 if (forecast.has("rain")) {
                     precipitation = forecast.getJSONObject("rain").optDouble(
                             "3h", 0.0);
@@ -86,7 +87,8 @@ public class WeatherApiService {
                         String.valueOf(dt), // Pass the Unix timestamp as a String to WeatherData constructor
                         temperature,
                         humidity,
-                        precipitation
+                        precipitation,
+                        feelsLike
                 );
                 weatherData.setDescription(description);
 
@@ -114,16 +116,19 @@ public class WeatherApiService {
                         WeatherData::getHumidity).average().orElse(0.0);
                 double totalPrecipitation = dailyData.stream().mapToDouble(
                         WeatherData::getPrecipitation).sum();
+                double avgFeelsLike = dailyData.stream().mapToDouble(
+                        WeatherData::getFeelsLike).average().orElse(0.0);
 
                 String description = dailyData.get(0).getDescription();
 
                 // Create summary WeatherData for the day
                 WeatherData dailySummary = new WeatherData(location,
                         String.valueOf(dailyData.get(0).getDateTime().
-                                toEpochSecond(java.time.ZoneOffset.UTC)), // Pass Unix timestamp here
+                                toEpochSecond(java.time.ZoneOffset.UTC)),
                         avgTemp,
                         avgHumidity,
-                        totalPrecipitation
+                        totalPrecipitation,
+                        avgFeelsLike
                 );
                 dailySummary.setDescription(description);
 

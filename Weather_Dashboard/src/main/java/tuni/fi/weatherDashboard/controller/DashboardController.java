@@ -188,13 +188,13 @@ public class DashboardController extends BaseController {
                 "Temperature: %.1f°C",
                 currentWeather.
                         getTemperature()));
+        weatherSummaryListView.getItems().add(String.format(
+                "Feels like: %.1f°C",
+                currentWeather.
+                        getFeelsLike()));
         weatherSummaryListView.getItems().add(String.format("Humidity: %.1f%%",
                 currentWeather.
                         getHumidity()));
-        weatherSummaryListView.getItems().add(String.format(
-                "Precipitation: %.1f%%",
-                currentWeather.
-                        getPrecipitation()));
         if (currentWeather.getDescription() != null) {
             weatherSummaryListView.getItems().add("Conditions: " +
                     currentWeather.getDescription());
@@ -320,6 +320,8 @@ public class DashboardController extends BaseController {
                 label.setTranslateX(10);
                 label.setTranslateY(15);
 
+                System.out.println("Humidity: " + dataPoint);
+
                 // Set the label as the node for the data point
                 dataPoint.setNode(label);
 
@@ -328,6 +330,33 @@ public class DashboardController extends BaseController {
             });
             weatherChart.getData().add(humiditySeries);
         }
+
+        XYChart.Series<String, Number> precipSeries =
+                new XYChart.Series<>();
+        precipSeries.setName("Precipitation mm");
+        dataModel.getWeatherDataList().forEach(data -> {
+            String formattedDate = DateTimeUtils.formatDateTime(data.
+                    getDateTime());
+
+            XYChart.Data<String, Number> dataPoint = new XYChart.Data<>(
+                    formattedDate, data.getHumidity());
+
+            // Create a label to display next to the data point
+            Text label = new Text(String.format("%d%%", (int) data.
+                    getPrecipitation()));
+            label.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;");
+            label.setTranslateX(10);
+            label.setTranslateY(15);
+
+            System.out.println("Precipitation: " + dataPoint);
+
+            // Set the label as the node for the data point
+            dataPoint.setNode(label);
+
+            // Add the data point to the series
+            precipSeries.getData().add(dataPoint);
+        });
+        weatherChart.getData().add(precipSeries);
     }
 
     /*
@@ -455,8 +484,6 @@ public class DashboardController extends BaseController {
 
         // Update the calendar UI with the highlight map
         updateCalendarUI(highlightMap);
-
-        System.out.println("Tried to call updateCalendarUI");
     }
 
 
@@ -468,7 +495,6 @@ public class DashboardController extends BaseController {
                     Label dayLabel = (Label) stackPane.getChildren().get(0);  // Get the Label from StackPane
                     String text = dayLabel.getText();
                     if (!text.isEmpty()) {
-                        System.out.println("String text: \"" + text + "\"");
                         LocalDate cellDate = getDateFromCell(dayLabel);
 
                         // Remove previous dots

@@ -70,12 +70,6 @@ public class HistoryController extends BaseController {
         }
     }
 
-    public void addTestData() {
-        WeatherData testData =
-                new WeatherData("Testi", "1732714923", 10.0, 15.0, 5.0);
-        addSearchToHistory(testData);
-    }
-
     public void addSearchToHistory(WeatherData weatherData) {
         if (weatherData != null) {
             if (historyTable != null) {
