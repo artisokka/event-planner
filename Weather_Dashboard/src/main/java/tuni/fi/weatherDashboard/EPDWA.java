@@ -47,14 +47,14 @@ public class EPDWA extends Application {
             FXMLLoader historyLoader = new FXMLLoader(getClass().getResource(
                     "/tuni/fi/weatherDashboard/view/History.fxml"));
             historyLoader.setController(historyController);  // Set controller manually
-            Scene history = new Scene(historyLoader.load(), 800, 600);
+            Scene history = new Scene(historyLoader.load(), 900, 700);
             loadedScenes.put("History.fxml", history);  // Add scene to the map
 
             // Create and load Dashboard FXML
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
                     "/tuni/fi/weatherDashboard/view/Dashboard.fxml"));
             loader.setController(dashboardController);  // Set controller manually
-            Scene dash = new Scene(loader.load(), 800, 600);
+            Scene dash = new Scene(loader.load(), 900, 700);
             loadedScenes.put("Dashboard.fxml", dash);  // Add scene to the map
 
             // Create and load Save Preferences FXML
@@ -62,14 +62,14 @@ public class EPDWA extends Application {
                     getResource(
                             "/tuni/fi/weatherDashboard/view/SavePreferences.fxml"));
             preferencesLoader.setController(preferencesController);  // Set controller manually
-            Scene preferences = new Scene(preferencesLoader.load(), 800, 600);
+            Scene preferences = new Scene(preferencesLoader.load(), 900, 700);
             loadedScenes.put("SavePreferences.fxml", preferences);  // Add scene to the map
 
             // Create and load About FXML
             FXMLLoader aboutLoader = new FXMLLoader(getClass().getResource(
                     "/tuni/fi/weatherDashboard/view/About.fxml"));
             aboutLoader.setController(aboutController);  // Set controller manually
-            Scene about = new Scene(aboutLoader.load(), 800, 600);
+            Scene about = new Scene(aboutLoader.load(), 900, 700);
             loadedScenes.put("About.fxml", about);  // Add scene to the map
 
 

@@ -12,7 +12,19 @@ public class DateTimeUtils {
 
         // Define the custom format pattern
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
-                "dd.MM.\nHH.mm");
+                "dd.MM.");
+
+        // Format the LocalDateTime
+        String formattedDateTime = dateTime.format(formatter);
+
+        return formattedDateTime;
+    }
+
+    public static String formatDateTimeWithYear(LocalDateTime dateTime) {
+
+        // Define the custom format pattern
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
+                "dd.MM.yyyy");
 
         // Format the LocalDateTime
         String formattedDateTime = dateTime.format(formatter);

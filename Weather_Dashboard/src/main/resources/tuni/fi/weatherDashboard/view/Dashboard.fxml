@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
@@ -12,107 +12,111 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23" prefHeight="600" prefWidth="800" style="-fx-background-color: #f0f4f7;">
+<BorderPane xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" prefHeight="900" prefWidth="1200" style="-fx-background-color: #f0f4f7;">
 
-    <!-- Top Section: Navigation Bar -->
+    <!-- Top Section -->
     <top>
         <AnchorPane prefHeight="42.0" style="-fx-background-color: #3F51B5;">
-        <children>
-            <!-- Styled label, aligned left -->
-            <Label text="EVENT PLANNER'S DASHBOARD" 
-                   style="-fx-font-size: 20px; -fx-text-fill: white; -fx-font-weight: bold;" 
-                   AnchorPane.leftAnchor="10.0" 
-                   AnchorPane.topAnchor="5.0" />
-
-            <!-- Styled toolbar, aligned right -->
-            <ToolBar style="-fx-background-color: transparent;" 
-                     AnchorPane.rightAnchor="10.0" 
-                     AnchorPane.topAnchor="0.0">
-                <items>
-                    <Button text="Home" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" />
-                    <Button text="History" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" />
-                    <Button text="Saved Preferences" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" />
-                    <Button text="About" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" />
-                </items>
-            </ToolBar>
-        </children>
-    </AnchorPane>
+            <children>
+                <Label style="-fx-font-size: 20px; -fx-text-fill: white; -fx-font-weight: bold;"
+                       text="EVENT PLANNER'S DASHBOARD" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0" />
+                <ToolBar style="-fx-background-color: transparent;" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">
+                    <items>
+                        <Button fx:id="homeButton" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" text="Home" />
+                        <Button fx:id="historyButton" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" text="History" />
+                        <Button fx:id="savedPreferencesButton" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" text="Saved Preferences" />
+                        <Button fx:id="aboutButton" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" text="About" />
+                    </items>
+                </ToolBar>
+            </children>
+        </AnchorPane>
     </top>
 
-    <!-- Left Section: Controls Panel -->
+    <!-- Left Side Controls -->
     <left>
-        <VBox spacing="12" prefWidth="200" style="-fx-background-color: #f5f5f5; -fx-padding: 10;">
-            <Label text="Controls" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
-            <TextField promptText="Search Location" style="-fx-background-color: #E0E0E0; -fx-prompt-text-fill: #616161;" />
-            <ComboBox promptText="Select Region" style="-fx-background-color: #E0E0E0;" />
-            <ComboBox promptText="Select Date Range" style="-fx-background-color: #E0E0E0;" />
-            <CheckBox text="Show Temperature" />
-            <CheckBox text="Show Humidity" />
-            <Button text="Apply" style="-fx-background-color: #3F51B5; -fx-text-fill: white;" />
-            <Button text="Save Preferences" style="-fx-background-color: #607D8B; -fx-text-fill: white;" />
+        <VBox prefHeight="800.0" prefWidth="160.0" spacing="15.0" style="-fx-background-color: #3F51B5; -fx-padding: 20px;">
+            <children>
+                <TextField fx:id="locationField" promptText="Enter City" />
+                <ComboBox fx:id="regionComboBox" prefWidth="150.0" promptText="Select Region" />
+                <ComboBox fx:id="dateRangeComboBox" prefWidth="150.0" promptText="Select Date Range" />
+                <CheckBox fx:id="showTemperatureCheck" mnemonicParsing="false" text="Show Temperature" />
+                <CheckBox fx:id="showHumidityCheck" mnemonicParsing="false" text="Show Humidity" />
+                <Button fx:id="searchButton" mnemonicParsing="false" onAction="#handleSearch" text="Search" />
+                <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSave" text="Save Preferences" />
+            </children>
         </VBox>
     </left>
 
-    <!-- Main Section: Central Content -->
-    <!-- Central Content -->
-<center>
-    <VBox spacing="20" style="-fx-padding: 15;">
-        
-        <!-- Top Row: Weather Forecast and Air Quality Visualization -->
-        <HBox spacing="20">
-            <!-- Weather Forecast Section -->
-            <VBox spacing="10" style="-fx-padding: 10; -fx-background-color: #ffffff; -fx-border-color: #e0e0e0; -fx-border-width: 1;" prefWidth="400">
-                <Label text="Weather Forecast" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #37474F;" />
-                <Label text="Today: 24°C, Partly Cloudy" />
-                <Label text="Mon: 22°C, Rain" />
-                <Label text="Tue: 21°C, Sunny" />
-                <Label text="Wed: 20°C, Cloudy" />
-                <Label text="Thu: 22°C, Thunderstorms" />
-                <Label text="Fri: 25°C, Sunny" />
-                <Label text="Sat: 24°C, Windy" />
+    <!-- Weather Data Summary and Chart in Center -->
+    <center>
+        <VBox spacing="10.0" prefHeight="800.0" prefWidth="500.0" style="-fx-padding: 25px;">
+
+            <!-- Weather Summary -->
+            <VBox spacing="10.0" prefHeight="300.0">
+                <children>
+                    <Label text="Weather Summary" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+                    <Label fx:id="headerLabel" style="-fx-font-weight: bold; -fx-font-size: 14px;" />
+                    <ListView fx:id="weatherSummaryListView" prefHeight="150.0" prefWidth="580.0" />
+                </children>
             </VBox>
 
-            <!-- Air Quality Visualization -->
-            <VBox spacing="10" style="-fx-padding: 10; -fx-background-color: #ffffff; -fx-border-color: #e0e0e0; -fx-border-width: 1;" prefWidth="400">
-                <Label text="Air Quality Visualization" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #37474F;" />
-                <BarChart prefHeight="200" prefWidth="300">
+            <!-- Weather Visualization -->
+            <VBox spacing="10.0" prefHeight="300.0" prefWidth="300.0">
+                <children>
+                    <Label text="Weather Visualization" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+                    <LineChart fx:id="weatherChart" prefHeight="250.0" prefWidth="550.0">
+                        <xAxis>
+                            <CategoryAxis side="BOTTOM" label="Date" />
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis side="LEFT" label="Value" />
+                        </yAxis>
+                    </LineChart>
+                </children>
+            </VBox>
+        </VBox>
+    </center>
+
+    <!-- Air Quality Chart on the Right -->
+    <right>
+            <VBox spacing="10.0" prefHeight="600.0" prefWidth="160.0" style="-fx-padding: 25px;">
+            <!-- Air Quality Visualization Section -->
+            <VBox spacing="10.0" prefHeight="300.0">
+                <Label text="Air Quality Visualization" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+                <BarChart fx:id="airQualityChart" prefHeight="250.0" prefWidth="150.0">
                     <xAxis>
-                        <CategoryAxis label="Pollutants" />
+                        <CategoryAxis side="BOTTOM" label="Pollutant" />
                     </xAxis>
                     <yAxis>
-                        <NumberAxis label="Concentration (µg/m³)" />
+                        <NumberAxis side="LEFT" label="Concentration (µg/m³)" />
                     </yAxis>
                 </BarChart>
             </VBox>
-        </HBox>
 
-        <!-- Bottom Row: Weather Data Visualization and Calendar -->
-        <HBox spacing="20">
-            <!-- Weather Data Visualization -->
-            <VBox spacing="10" style="-fx-padding: 10; -fx-background-color: #ffffff; -fx-border-color: #e0e0e0; -fx-border-width: 1;" prefWidth="400">
-                <Label text="Weather Data Visualization" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #37474F;" />
-                <LineChart prefHeight="200" prefWidth="300">
-                    <xAxis>
-                        <CategoryAxis label="Days" />
-                    </xAxis>
-                    <yAxis>
-                        <NumberAxis label="Values" />
-                    </yAxis>
-                </LineChart>
-            </VBox>
+            <!-- Weather Calendar Section -->
+            <VBox spacing="10.0" prefHeight="400.0">
+                <Label text="Weather Calendar" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
 
-            <!-- Calendar Section -->
-            <VBox spacing="10" style="-fx-padding: 10; -fx-background-color: #ffffff; -fx-border-color: #e0e0e0; -fx-border-width: 1;" prefWidth="400">
-                <Label text="Calendar" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #37474F;" />
-                <DatePicker prefWidth="200" />
+                <!-- HBox to arrange the buttons -->
+                <HBox spacing="10.0" alignment="CENTER">
+                    <!-- Left-aligned button -->
+                    <Button fx:id="prevMonthButton" text="Previous" onAction="#handlePreviousMonth"/>
+
+                    <!-- Right-aligned button -->
+                    <Button fx:id="nextMonthButton" text="Next" onAction="#handleNextMonth"/>
+                </HBox>
+
+                <!-- Calendar Grid -->
+                <GridPane fx:id="calendarGrid" hgap="5" vgap="5" style="-fx-padding: 10; -fx-background-color: #e8eaf6; -fx-border-color: #3F51B5; -fx-border-width: 2;">
+                    <!-- Calendar days will be added dynamically -->
+                </GridPane>
             </VBox>
-        </HBox>
-    </VBox>
-</center>
+        </VBox>
+    </right>
+
 </BorderPane>

@@ -37,7 +37,7 @@ public class WeatherApiService {
                     cityName);
             String jsonResponse = sendGetRequest(apiUrl);
 
-            //System.out.println("Raw API Response: " + jsonResponse);
+            System.out.println("Raw API Response: " + jsonResponse);
 
             weatherDataList = parse5DayForecast(cityName, jsonResponse);
 
@@ -69,8 +69,9 @@ public class WeatherApiService {
                 JSONObject main = forecast.getJSONObject("main");
                 double temperature = main.getDouble("temp");
                 double humidity = main.getDouble("humidity");
-
                 double precipitation = 0.0;
+                double feelsLike = main.getDouble("feels_like");
+
                 if (forecast.has("rain")) {
                     precipitation = forecast.getJSONObject("rain").optDouble(
                             "3h", 0.0);
@@ -86,7 +87,8 @@ public class WeatherApiService {
                         String.valueOf(dt), // Pass the Unix timestamp as a String to WeatherData constructor
                         temperature,
                         humidity,
-                        precipitation
+                        precipitation,
+                        feelsLike
                 );
                 weatherData.setDescription(description);
 
@@ -107,23 +109,29 @@ public class WeatherApiService {
                 String date = entry.getKey();
                 List<WeatherData> dailyData = entry.getValue();
 
-                // Calculate daily averages
-                double avgTemp = dailyData.stream().mapToDouble(
-                        WeatherData::getTemperature).average().orElse(0.0);
+                // Calculate daily averages and get maxTemp and minTemp
+                double maxTemp = dailyData.stream().mapToDouble(
+                        WeatherData::getTemperature).max().orElse(0.0);
+                double minTemp = dailyData.stream().mapToDouble(
+                        WeatherData::getTemperature).min().orElse(0.0);
                 double avgHumidity = dailyData.stream().mapToDouble(
                         WeatherData::getHumidity).average().orElse(0.0);
                 double totalPrecipitation = dailyData.stream().mapToDouble(
                         WeatherData::getPrecipitation).sum();
+                double avgFeelsLike = dailyData.stream().mapToDouble(
+                        WeatherData::getFeelsLike).average().orElse(0.0);
 
                 String description = dailyData.get(0).getDescription();
 
                 // Create summary WeatherData for the day
                 WeatherData dailySummary = new WeatherData(location,
                         String.valueOf(dailyData.get(0).getDateTime().
-                                toEpochSecond(java.time.ZoneOffset.UTC)), // Pass Unix timestamp here
-                        avgTemp,
+                                toEpochSecond(java.time.ZoneOffset.UTC)),
+                        maxTemp,
                         avgHumidity,
-                        totalPrecipitation
+                        totalPrecipitation,
+                        avgFeelsLike,
+                        minTemp
                 );
                 dailySummary.setDescription(description);
 

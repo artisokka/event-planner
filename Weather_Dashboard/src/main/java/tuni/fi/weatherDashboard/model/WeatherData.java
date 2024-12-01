@@ -3,6 +3,7 @@ package tuni.fi.weatherDashboard.model;
 import java.time.LocalDateTime;
 import java.time.Instant;
 import java.time.ZoneId;
+import tuni.fi.weatherDashboard.utils.DateTimeUtils;
 
 public class WeatherData {
 
@@ -11,27 +12,68 @@ public class WeatherData {
     private double humidity;
     private double precipitation;
     private String location;
+    private String formatDate;
     private String description;
+    private double feelsLike;
+    private Double minTemp;
 
     public WeatherData(String location, String dateTime, double temperature,
-            double humidity,                      double precipitation) {
+            double humidity, double precipitation, double feelsLike,
+            Double minTemp) {
         this.location = location;
         this.dateTime = LocalDateTime.ofInstant(
                 Instant.ofEpochSecond(Long.parseLong(dateTime)),
             ZoneId.systemDefault()
         );
+
+        this.formatDate = DateTimeUtils.formatDateTimeWithYear(this.dateTime);
+        System.out.println("This is formatted date: " + this.formatDate);
         this.temperature = temperature;
         this.humidity = humidity;
         this.precipitation = precipitation;
+        this.feelsLike = feelsLike;
+        this.minTemp = minTemp;
+    }
+
+    public WeatherData(String location, String dateTime, double temperature,
+            double humidity, double precipitation, double feelsLike) {
+        this(location, dateTime, temperature, humidity, precipitation, feelsLike,
+                null);
     }
 
     // Getters
     public LocalDateTime getDateTime() { return dateTime; }
-    public double getTemperature() { return temperature; }
+    public double getTemperature() {
+        return temperature;
+    }
+
+    public double getMinTemp() {
+        return minTemp;
+    }
     public double getHumidity() { return humidity; }
-    public double getPrecipitation() { return precipitation; }
+    public double getPrecipitation() {
+        return precipitation;
+    }
+
+    public double getFeelsLike() {
+        return feelsLike;
+    }
     public String getLocation() { return location; }
-    public String getDescription() { return description; }
+    public String getDescription() {
+        return description;
+    }
+
+    public LocalDateTime getLocalDate() {
+        return dateTime;
+    }
+
+    public String getFormatDate() {
+        return formatDate;
+    }
+
+    public boolean isRain(String description) {
+        return description.toLowerCase().contains("rain");
+    }
 
     // Setters
     public void setLocation(String location) { this.location = location; }

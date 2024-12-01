@@ -10,7 +10,7 @@
     <top>
         <AnchorPane prefHeight="42.0" style="-fx-background-color: #3F51B5;">
             <children>
-                <Label style="-fx-font-size: 20px; -fx-text-fill: white; -fx-font-weight: bold;" 
+                <Label style="-fx-font-size: 20px; -fx-text-fill: white; -fx-font-weight: bold;"
                        text="EVENT PLANNER'S DASHBOARD" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0" />
                 <ToolBar style="-fx-background-color: transparent;" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">
                     <items>
@@ -36,7 +36,7 @@
                         <columns>
                             <TableColumn fx:id="cityColumn" prefWidth="100.0" text="City" />
                             <TableColumn fx:id="dateColumn" prefWidth="100.0" text="Date" />
-                            <TableColumn fx:id="temperatureColumn" prefWidth="200.0" text="Temperature" />
+                            <TableColumn fx:id="temperatureColumn" prefWidth="100.0" text="Temperature" />
                         </columns>
                     </TableView>
                 </VBox>
