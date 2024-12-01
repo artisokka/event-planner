@@ -45,9 +45,9 @@ public class DashboardController extends BaseController {
     @FXML private Label temperatureLabel, humidityLabel, descriptionLabel;
     @FXML private GridPane weatherSummary;
     @FXML private BarChart<String, Number> airQualityChart;
-    @FXML private GridPane calendarGrid;
+    @FXML  GridPane calendarGrid;
     @FXML private Button prevMonthButton, nextMonthButton;
-    @FXML private Label monthName;
+    @FXML  Label monthName;
 
     private WeatherApiService weatherService;
     private OpenAQService airQualityService;
