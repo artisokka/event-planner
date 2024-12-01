@@ -3,9 +3,11 @@ package tuni.fi.weatherDashboard.controller;
 import tuni.fi.weatherDashboard.calendar.CalendarUtils;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.format.TextStyle;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,6 +46,7 @@ public class DashboardController extends BaseController {
     @FXML private GridPane calendarGrid;
     @FXML private Button prevMonthButton, nextMonthButton;
     @FXML private Label headerLabel;
+    @FXML private Label monthName;
 
     private WeatherApiService weatherService;
     private OpenAQService airQualityService;
@@ -195,7 +198,7 @@ public class DashboardController extends BaseController {
         // Clear previous data in the list view
         weatherSummaryListView.getItems().clear();
 
-        headerLabel.setText(StringUtils.capitalizeCities(
+        headerLabel.setText(StringUtils.capitalizeFirstLetter(
                 locationField.getText()));
 
         // Add current weather summary to the list view
@@ -311,6 +314,8 @@ public class DashboardController extends BaseController {
             LocalDate firstDayOfMonth = yearMonth.atDay(1);
             int firstDayOfWeek = firstDayOfMonth.getDayOfWeek().getValue(); // 1 = Monday, 7 = Sunday
 
+            updateMonthName(selectedDate);
+
             // Adjust firstDayOfWeek
             firstDayOfWeek = (firstDayOfWeek == 7) ? 6 : firstDayOfWeek - 1;
 
@@ -325,7 +330,7 @@ public class DashboardController extends BaseController {
                 calendarGrid.add(weekdayLabel, col, 0);  // Place at the top row (row = 0)
             }
 
-            int rows = 6, cols = 7, dayCounter = 1;
+            int rows = 7, cols = 7, dayCounter = 1;
             for (int row = 1; row < rows; row++) {  // Start adding days from row 1 (below the weekday labels)
                 for (int col = 0; col < cols; col++) {
                     // Create a StackPane for each calendar cell
@@ -365,6 +370,7 @@ public class DashboardController extends BaseController {
     private void handlePreviousMonth() {
         currentDate = currentDate.minusMonths(1);  // Move to the previous month
         populateCalendar(currentDate);
+        updateMonthName(currentDate);
         if (forecastData != null) {
             highlightCalendar(forecastData);  // Highlight forecast data for the new month
         }
@@ -374,9 +380,16 @@ public class DashboardController extends BaseController {
     private void handleNextMonth() {
         currentDate = currentDate.plusMonths(1);  // Move to the next month
         populateCalendar(currentDate);
+        updateMonthName(currentDate);
         if (forecastData != null) {
             highlightCalendar(forecastData);  // Highlight forecast data for the new month
         }
+    }
+
+    public void updateMonthName(LocalDate currentDate) {
+        monthName.setText(StringUtils.capitalizeFirstLetter(currentDate.
+                getMonth().getDisplayName(
+                        TextStyle.FULL, Locale.ENGLISH)));
     }
 
     public void highlightCalendar(List<WeatherData> forecastData) {

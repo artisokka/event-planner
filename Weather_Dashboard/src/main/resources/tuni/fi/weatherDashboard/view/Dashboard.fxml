@@ -106,7 +106,7 @@
                 <HBox spacing="10.0" alignment="CENTER">
                     <!-- Left-aligned button -->
                     <Button fx:id="prevMonthButton" text="Previous" onAction="#handlePreviousMonth"/>
-
+                    <Label fx:id="monthName" style="-fx-font-weight: bold; -fx-font-size: 14px;" />
                     <!-- Right-aligned button -->
                     <Button fx:id="nextMonthButton" text="Next" onAction="#handleNextMonth"/>
                 </HBox>
