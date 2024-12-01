@@ -213,6 +213,10 @@ public class DashboardController extends BaseController {
         weatherSummaryListView.getItems().add(String.format("Humidity: %.1f%%",
                 currentWeather.
                         getHumidity()));
+        weatherSummaryListView.getItems().add(String.format(
+                "Precipitation: %.1fmm",
+                currentWeather.
+                        getPrecipitation()));
         if (currentWeather.getDescription() != null) {
             weatherSummaryListView.getItems().add("Conditions: " +
                     currentWeather.getDescription());
