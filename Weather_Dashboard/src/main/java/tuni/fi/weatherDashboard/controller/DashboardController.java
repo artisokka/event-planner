@@ -3,9 +3,12 @@ package tuni.fi.weatherDashboard.controller;
 import tuni.fi.weatherDashboard.calendar.CalendarUtils;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,15 +24,16 @@ import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import tuni.fi.weatherDashboard.model.AirQualityData;
 import tuni.fi.weatherDashboard.service.OpenAQService;
 import tuni.fi.weatherDashboard.utils.AlertUtils;
-import tuni.fi.weatherDashboard.utils.DateTimeUtils;
 import tuni.fi.weatherDashboard.utils.LineChartUtils;
 import tuni.fi.weatherDashboard.utils.StringUtils;
+import tuni.fi.weatherDashboard.utils.WeatherCardUtils;
 
 public class DashboardController extends BaseController {
 
@@ -39,18 +43,18 @@ public class DashboardController extends BaseController {
     @FXML private Button searchButton, saveButton;
     @FXML private LineChart<String, Number> weatherChart;
     @FXML private Label temperatureLabel, humidityLabel, descriptionLabel;
-    @FXML private ListView<String> weatherSummaryListView;
+    @FXML private GridPane weatherSummary;
     @FXML private BarChart<String, Number> airQualityChart;
     @FXML private GridPane calendarGrid;
     @FXML private Button prevMonthButton, nextMonthButton;
-    @FXML private Label headerLabel;
+    @FXML private Label monthName;
 
     private WeatherApiService weatherService;
     private OpenAQService airQualityService;
     private HistoryController historyController;
     private CalendarUtils calendar;
     private LocalDate currentDate = LocalDate.now();
-    private List<WeatherData> forecastData;
+    private ArrayList<WeatherData> forecastData;
 
     @FXML
     @Override
@@ -106,6 +110,7 @@ public class DashboardController extends BaseController {
         try {
             DataModel weatherDataModel = weatherService.fetchWeatherData(
                     location);
+
             forecastData = weatherDataModel.
                     getWeatherDataList();
             if (forecastData.isEmpty()) {
@@ -125,7 +130,7 @@ public class DashboardController extends BaseController {
             AirQualityData airQualityData = airQualityService.
                     fetchAirQualityData(location);
 
-            saveSearchToHistory(forecastData.get(forecastData.size() - 1));
+            saveSearchToHistory(forecastData.get(0));
             updateUI(weatherDataModel, airQualityData);
         } catch (Exception e) {
             AlertUtils.showAlert("Error", "Failed to fetch data: " + e.
@@ -180,40 +185,23 @@ public class DashboardController extends BaseController {
             }
 
 
-            updateWeatherSummaryListView(currentWeather);
+            //updateWeatherSummaryListView(currentWeather);
+            displayWeatherCards(currentWeather);
+
             updateAirQualityChart(airQualityData);
             updateChart(weatherDataModel);
             highlightCalendar(forecastData);
         });
     }
 
-    private void updateWeatherSummaryListView(WeatherData currentWeather) {
-        if (weatherSummaryListView == null) {
-            return;
-        }
+    private void displayWeatherCards(WeatherData currentWeather) {
+        weatherSummary.getChildren().clear(); // Clear existing content
 
-        // Clear previous data in the list view
-        weatherSummaryListView.getItems().clear();
+        int row = 0;
+        int col = 0;
 
-        headerLabel.setText(StringUtils.capitalizeCities(
-                locationField.getText()));
-
-        // Add current weather summary to the list view
-        weatherSummaryListView.getItems().add(String.format(
-                "Temperature: %.1f°C",
-                currentWeather.
-                        getTemperature()));
-        weatherSummaryListView.getItems().add(String.format(
-                "Feels like: %.1f°C",
-                currentWeather.
-                        getFeelsLike()));
-        weatherSummaryListView.getItems().add(String.format("Humidity: %.1f%%",
-                currentWeather.
-                        getHumidity()));
-        if (currentWeather.getDescription() != null) {
-            weatherSummaryListView.getItems().add("Conditions: " +
-                    currentWeather.getDescription());
-        }
+        VBox weatherCard = WeatherCardUtils.createWeatherCard(currentWeather);
+        weatherSummary.add(weatherCard, col, col);
     }
 
     private void updateAirQualityChart(AirQualityData airQualityData) {
@@ -311,6 +299,8 @@ public class DashboardController extends BaseController {
             LocalDate firstDayOfMonth = yearMonth.atDay(1);
             int firstDayOfWeek = firstDayOfMonth.getDayOfWeek().getValue(); // 1 = Monday, 7 = Sunday
 
+            updateMonthName(selectedDate);
+
             // Adjust firstDayOfWeek
             firstDayOfWeek = (firstDayOfWeek == 7) ? 6 : firstDayOfWeek - 1;
 
@@ -325,7 +315,7 @@ public class DashboardController extends BaseController {
                 calendarGrid.add(weekdayLabel, col, 0);  // Place at the top row (row = 0)
             }
 
-            int rows = 6, cols = 7, dayCounter = 1;
+            int rows = 7, cols = 7, dayCounter = 1;
             for (int row = 1; row < rows; row++) {  // Start adding days from row 1 (below the weekday labels)
                 for (int col = 0; col < cols; col++) {
                     // Create a StackPane for each calendar cell
@@ -365,6 +355,7 @@ public class DashboardController extends BaseController {
     private void handlePreviousMonth() {
         currentDate = currentDate.minusMonths(1);  // Move to the previous month
         populateCalendar(currentDate);
+        updateMonthName(currentDate);
         if (forecastData != null) {
             highlightCalendar(forecastData);  // Highlight forecast data for the new month
         }
@@ -374,9 +365,16 @@ public class DashboardController extends BaseController {
     private void handleNextMonth() {
         currentDate = currentDate.plusMonths(1);  // Move to the next month
         populateCalendar(currentDate);
+        updateMonthName(currentDate);
         if (forecastData != null) {
             highlightCalendar(forecastData);  // Highlight forecast data for the new month
         }
+    }
+
+    public void updateMonthName(LocalDate currentDate) {
+        monthName.setText(StringUtils.capitalizeFirstLetter(currentDate.
+                getMonth().getDisplayName(
+                        TextStyle.FULL, Locale.ENGLISH)));
     }
 
     public void highlightCalendar(List<WeatherData> forecastData) {
