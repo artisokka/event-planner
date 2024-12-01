@@ -13,10 +13,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import tuni.fi.weatherDashboard.model.*;
 
-class DashboardControllerTest {
+class DashboardControllerTest extends TestBase {
     private DashboardController controller;
-    private static boolean jfxIsSetup = false;
-
     
 
     @BeforeEach

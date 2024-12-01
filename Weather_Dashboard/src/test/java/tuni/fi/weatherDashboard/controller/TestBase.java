@@ -1,4 +1,4 @@
-package tuni.fi.weatherDashboard.utils;
+package tuni.fi.weatherDashboard.controller;
 
 /**
  *
