@@ -28,6 +28,7 @@ import tuni.fi.weatherDashboard.model.AirQualityData;
 import tuni.fi.weatherDashboard.service.OpenAQService;
 import tuni.fi.weatherDashboard.utils.AlertUtils;
 import tuni.fi.weatherDashboard.utils.DateTimeUtils;
+import tuni.fi.weatherDashboard.utils.LineChartUtils;
 import tuni.fi.weatherDashboard.utils.StringUtils;
 
 public class DashboardController extends BaseController {
@@ -111,14 +112,34 @@ public class DashboardController extends BaseController {
                 throw new IllegalStateException("No weather data available");
             }
 
+            for (WeatherData weatherData : forecastData) {
+                System.out.println("Weather Data: " + weatherData);
+                // If you need more specific details, you can print specific attributes
+                System.out.println("Location: " + weatherData.getLocation());
+                System.out.println("Date: " + weatherData.getFormatDate());
+                System.out.println("Temperature: " + weatherData.
+                        getTemperature());
+                System.out.println("Humidity: " + weatherData.getHumidity());
+            }
+
             AirQualityData airQualityData = airQualityService.
                     fetchAirQualityData(location);
 
-            saveSearchToHistory(forecastData.get(0));
+            saveSearchToHistory(forecastData.get(forecastData.size() - 1));
             updateUI(weatherDataModel, airQualityData);
         } catch (Exception e) {
             AlertUtils.showAlert("Error", "Failed to fetch data: " + e.
                     getMessage());
+        }
+    }
+
+    private void saveSearchToHistory(WeatherData weatherData) {
+        if (this.historyController == null) {
+            System.out.println(
+                    "Can't add search to history: historyController is null");
+        } else {
+            this.historyController.addSearchToHistory(weatherData);
+            System.out.println("Adding to history: " + weatherData);
         }
     }
 
@@ -164,17 +185,6 @@ public class DashboardController extends BaseController {
             updateChart(weatherDataModel);
             highlightCalendar(forecastData);
         });
-    }
-
-
-    private void saveSearchToHistory(WeatherData weatherData) {
-        if (this.historyController == null) {
-            System.out.println(
-                    "Can't add search to history: historyController is null");
-        } else {
-            this.historyController.addSearchToHistory(weatherData);
-            System.out.println("Adding to history: " + weatherData);
-        }
     }
 
     private void updateWeatherSummaryListView(WeatherData currentWeather) {
@@ -257,10 +267,6 @@ public class DashboardController extends BaseController {
                         getNo2()));
             }
 
-            System.out.println("PM2.5: " + airQualityData.getPm25());
-            System.out.println("PM10: " + airQualityData.getPm10());
-            System.out.println("NO2: " + airQualityData.getNo2());
-
             // Add the series to the BarChart
             airQualityChart.getData().add(series);
         }
@@ -276,14 +282,10 @@ public class DashboardController extends BaseController {
 
         if (showTemperatureCheck != null && showTemperatureCheck.isSelected()) {
             XYChart.Series<String, Number> maxTempSeries =
-                    new XYChart.Series<>();
+                    LineChartUtils.addPoints(dataModel, "max");
 
             XYChart.Series<String, Number> minTempSeries =
-                    new XYChart.Series<>();
-
-            maxTempSeries = addPoints(dataModel, "max");
-
-            minTempSeries = addPoints(dataModel, "min");
+                    LineChartUtils.addPoints(dataModel, "min");
 
             // Add the series to the chart
             weatherChart.getData().add(maxTempSeries);
@@ -292,75 +294,11 @@ public class DashboardController extends BaseController {
         }
 
         if (showHumidityCheck != null && showHumidityCheck.isSelected()) {
-            XYChart.Series<String, Number> humiditySeries =
-                    new XYChart.Series<>();
-            humiditySeries = addPoints(dataModel, "hum");
+            XYChart.Series<String, Number> humiditySeries = LineChartUtils.
+                    addPoints(dataModel, "hum");
 
             weatherChart.getData().add(humiditySeries);
         }
-    }
-
-    public XYChart.Series<String, Number> addPoints(DataModel dataModel,
-            String param) {
-
-        XYChart.Series<String, Number> series =
-                new XYChart.Series<>();
-
-        // Loop through the weather data
-        dataModel.getWeatherDataList().forEach(data -> {
-            String formattedDate = DateTimeUtils.formatDateTime(data.
-                    getDateTime());
-
-            XYChart.Data<String, Number> dataPoint = new XYChart.Data<>();
-            Text label = new Text();
-
-            if (param.equals("max")) {
-                series.setName("Max Temperature °C");
-                // Create a data point for the chart
-                dataPoint = new XYChart.Data<>(
-                        formattedDate, data.getTemperature());
-                // Create a label to display next to the data point
-                label = new Text(String.format("%d°C", (int) data.
-                        getTemperature()));
-                label.setTranslateX(10);
-                label.setTranslateY(-15);
-            }
-
-            if (param.equals("min")) {
-                series.setName("Min Temperature °C");
-                // Create a data point for the chart
-                dataPoint = new XYChart.Data<>(
-                        formattedDate, data.getMinTemp());
-                // Create a label to display next to the data point
-                label = new Text(String.format("%d°C", (int) data.
-                        getMinTemp()));
-                label.setTranslateX(10);
-                label.setTranslateY(15);
-            }
-
-            if (param.equals("hum")) {
-                series.setName("Humidity %");
-                // Create a data point for the chart
-                dataPoint = new XYChart.Data<>(
-                        formattedDate, data.getHumidity());
-                // Create a label to display next to the data point
-                label = new Text(String.format("%d%%", (int) data.
-                        getHumidity()));
-                label.setTranslateX(10);
-                label.setTranslateY(15);
-            }
-
-            label.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;");
-
-
-            // Set the label as the node for the data point
-            dataPoint.setNode(label);
-
-            // Add the data point to the series
-            series.getData().add(dataPoint);
-        });
-
-        return series;
     }
 
     /*

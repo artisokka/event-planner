@@ -19,7 +19,7 @@ public class HistoryController extends BaseController {
 
     @FXML private TableView<WeatherData> historyTable;
     @FXML private TableColumn<WeatherData, String> cityColumn;
-    @FXML private TableColumn<WeatherData, LocalDateTime> dateColumn;
+    @FXML private TableColumn<WeatherData, String> dateColumn;
     @FXML private TableColumn<WeatherData, Double> temperatureColumn;
     @FXML private ListView<String> eventsList;
     @FXML private LineChart<String, Number> historyChart; // Reference to the chart
@@ -54,7 +54,7 @@ public class HistoryController extends BaseController {
 
     private void setupTable() {
         cityColumn.setCellValueFactory(new PropertyValueFactory<>("location"));
-        dateColumn.setCellValueFactory(new PropertyValueFactory<>("dateTime"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("formatDate"));
         temperatureColumn.setCellValueFactory(new PropertyValueFactory<>(
                 "temperature"));
     }

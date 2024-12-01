@@ -20,4 +20,16 @@ public class DateTimeUtils {
         return formattedDateTime;
     }
 
+    public static String formatDateTimeWithYear(LocalDateTime dateTime) {
+
+        // Define the custom format pattern
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
+                "dd.MM.yyyy");
+
+        // Format the LocalDateTime
+        String formattedDateTime = dateTime.format(formatter);
+
+        return formattedDateTime;
+    }
+
 }

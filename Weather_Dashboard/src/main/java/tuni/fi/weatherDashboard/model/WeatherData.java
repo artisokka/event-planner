@@ -3,6 +3,7 @@ package tuni.fi.weatherDashboard.model;
 import java.time.LocalDateTime;
 import java.time.Instant;
 import java.time.ZoneId;
+import tuni.fi.weatherDashboard.utils.DateTimeUtils;
 
 public class WeatherData {
 
@@ -11,6 +12,7 @@ public class WeatherData {
     private double humidity;
     private double precipitation;
     private String location;
+    private String formatDate;
     private String description;
     private double feelsLike;
     private Double minTemp;
@@ -23,6 +25,9 @@ public class WeatherData {
                 Instant.ofEpochSecond(Long.parseLong(dateTime)),
             ZoneId.systemDefault()
         );
+
+        this.formatDate = DateTimeUtils.formatDateTimeWithYear(this.dateTime);
+        System.out.println("This is formatted date: " + this.formatDate);
         this.temperature = temperature;
         this.humidity = humidity;
         this.precipitation = precipitation;
@@ -59,7 +64,11 @@ public class WeatherData {
     }
 
     public LocalDateTime getLocalDate() {
-        return this.dateTime;
+        return dateTime;
+    }
+
+    public String getFormatDate() {
+        return formatDate;
     }
 
     public boolean isRain(String description) {
