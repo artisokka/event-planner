@@ -28,6 +28,7 @@ import tuni.fi.weatherDashboard.model.AirQualityData;
 import tuni.fi.weatherDashboard.service.OpenAQService;
 import tuni.fi.weatherDashboard.utils.AlertUtils;
 import tuni.fi.weatherDashboard.utils.DateTimeUtils;
+import tuni.fi.weatherDashboard.utils.StringUtils;
 
 public class DashboardController extends BaseController {
 
@@ -41,6 +42,7 @@ public class DashboardController extends BaseController {
     @FXML private BarChart<String, Number> airQualityChart;
     @FXML private GridPane calendarGrid;
     @FXML private Button prevMonthButton, nextMonthButton;
+    @FXML private Label headerLabel;
 
     private WeatherApiService weatherService;
     private OpenAQService airQualityService;
@@ -182,6 +184,9 @@ public class DashboardController extends BaseController {
 
         // Clear previous data in the list view
         weatherSummaryListView.getItems().clear();
+
+        headerLabel.setText(StringUtils.capitalizeCities(
+                locationField.getText()));
 
         // Add current weather summary to the list view
         weatherSummaryListView.getItems().add(String.format(
@@ -334,7 +339,7 @@ public class DashboardController extends BaseController {
             }
 
             if (param.equals("hum")) {
-                series.setName("Humidity %%");
+                series.setName("Humidity %");
                 // Create a data point for the chart
                 dataPoint = new XYChart.Data<>(
                         formattedDate, data.getHumidity());
