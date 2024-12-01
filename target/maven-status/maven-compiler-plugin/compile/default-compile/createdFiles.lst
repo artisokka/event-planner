@@ -1,9 +1,0 @@
-tuni/fi/weatherDashboard/model/DataModel.class
-tuni/fi/weatherDashboard/model/WeatherData.class
-tuni/fi/weatherDashboard/EPDWA.class
-tuni/fi/weatherDashboard/controller/SavePreferencesController.class
-tuni/fi/weatherDashboard/controller/HistoryController.class
-tuni/fi/weatherDashboard/controller/DashboardController.class
-tuni/fi/weatherDashboard/service/WeatherApiService.class
-tuni/fi/weatherDashboard/controller/BaseController.class
-tuni/fi/weatherDashboard/controller/AboutController.class
